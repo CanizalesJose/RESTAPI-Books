@@ -1,5 +1,4 @@
 var router = require('express').Router();
-var authorModel = require('../models/authorModel');
 var db = require('../connection/db');
 /*
     Ejemplo de uso de consultas a base de datos
