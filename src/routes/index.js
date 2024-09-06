@@ -3,13 +3,12 @@ var router = require('express').Router();
 // Se importan las rutas de cada elemento del router
 // Cada ruta debe encontrarse en la carpeta 'src/routes'
 // var [elemento] = require('[./elemento]');
-var models = require('./models');
-var materials = require('./materials');
+var authors = require('./authorEndpoints');
 
-// Por cada paquete de rutas de elemento se agrega un elemento al objeto Router
-// router.use('/elemento', nombreVar);
-router.use('/models', models);
-router.use('/materials', materials);
+// Por cada paquete de rutas de elemento se agrega una raíz al objeto Router
+// router.use('/rutaRaíz', variableRutas);
+// De forma práctica, esta es la ruta raiz para cada archivo de ruta
+router.use('/authors', authors);
 
 // Crear rutas del sistema, propias de la base de la API
 /*
@@ -19,7 +18,7 @@ router.use('/materials', materials);
  */
 router.get('/', function (req, res) {
   console.log(`Acceso con método ${req.method} en dirección ${req.path}`);
-  res.status(200).json({ message: 'Conexión a PrintOnDemand API' });
+  res.status(200).json({ message: 'Conexión a Books API' });
 });
 
 router.get('/');
