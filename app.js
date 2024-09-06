@@ -12,4 +12,10 @@ app.use('/api', router);
 
 // Se inicia el servidor en el puerto establecido
 app.listen(port);
-console.log('API escuchando en el puerto ' + port);
+console.log('API escuchando en http://localhost:' + port);
+
+process.on('SIGINT', async () => {
+    await DB.closePool();
+    console.log('Connection closed!');
+    process.exit(0);
+});
