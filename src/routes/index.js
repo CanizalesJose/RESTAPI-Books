@@ -3,12 +3,14 @@ var router = require('express').Router();
 // Se importan las rutas de cada elemento del router
 // Cada ruta debe encontrarse en la carpeta 'src/routes'
 // var [elemento] = require('[./elemento]');
-var authors = require('./authorEndpoints');
+var authors = require('./authors');
+var books = require('./books');
 
 // Por cada paquete de rutas de elemento se agrega una raíz al objeto Router
 // router.use('/rutaRaíz', variableRutas);
 // De forma práctica, esta es la ruta raiz para cada archivo de ruta
 router.use('/authors', authors);
+router.use('/books', books);
 
 // Crear rutas del sistema, propias de la base de la API
 /*
