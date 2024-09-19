@@ -2,6 +2,10 @@
 var express = require('express');
 var app = express();
 
+// Middleware para recuperar datos del post
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Se asigna un puerto para el servidor
 var port = process.env.PORT || 5000;
 

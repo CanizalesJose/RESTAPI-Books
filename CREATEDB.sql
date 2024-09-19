@@ -28,6 +28,17 @@ CREATE TABLE Books(
     FOREIGN KEY (bookCategory) REFERENCES Categories(categoryId)
 );
 
+CREATE TABLE Users(
+    userName VARCHAR(30) PRIMARY KEY,
+    userPassword VARCHAR(100),
+    usertype VARCHAR(15)
+);
+
+
+INSERT INTO Users(userName, userPassword, usertype) VALUES 
+('canizales', '$2a$10$gg0gsMs9mqq3w061FuN7HuJjyumVgwQtsiXBtg/.IpFwqXixRQvcK', '1');
+
+
 INSERT INTO Authors (authorId, authorName, authorNationality) VALUES
 ('A001', 'Gabriel García Márquez', 'Colombiano'),
 ('A002', 'J.K. Rowling', 'Británica'),

@@ -5,12 +5,14 @@ var router = require('express').Router();
 // var [elemento] = require('[./elemento]');
 var authors = require('./authors');
 var books = require('./books');
+const users = require('./users');
 
 // Por cada paquete de rutas de elemento se agrega una raíz al objeto Router
 // router.use('/rutaRaíz', variableRutas);
 // De forma práctica, esta es la ruta raiz para cada archivo de ruta
 router.use('/authors', authors);
 router.use('/books', books);
+router.use('/users', users);
 
 // Crear rutas del sistema, propias de la base de la API
 /*
