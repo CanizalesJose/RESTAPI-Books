@@ -29,7 +29,7 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    
+    res.status(200).json({sessionToken: 'asdasdasd'});
 });
 
 module.exports = router;
