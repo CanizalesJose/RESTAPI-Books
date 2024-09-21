@@ -12,7 +12,12 @@ La estructura del proyecto es la siguiente.
    - app.js (Iniciador principal)
    - package-lock.json (Configuración)
    - package.json (Configuración)
-   - README.md (Documentación)
+   - README.md (Documentación generica)
+
+Primero se deben instalar las dependencias usando
+```
+npm install
+```
 
 Para iniciar el servidor se puede usar `node` o `npm`:
 ```sh

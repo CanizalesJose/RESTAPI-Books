@@ -3,13 +3,13 @@ const mysql = require('mysql2/promise');
 class DB {
     constructor() {
         this.pool = mysql.createPool({
-            host: "localhost",
-            user: "root",
-            password: "1234",
-            database: "booksCenter",
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
             waitForConnections: true,
-            connectionLimit: 10,   // Número máximo de conexiones simultáneas
-            queueLimit: 0          // Número máximo de conexiones en espera (0 para ilimitado)
+            connectionLimit: 10,
+            queueLimit: 0
         });
     }
 
