@@ -1,28 +1,27 @@
 // Se crea un objeto de tipo Router desde la libreria express
-var router = require('express').Router();
+const router = require('express').Router();
 // Se importan las rutas de cada elemento del router
 // Cada ruta debe encontrarse en la carpeta 'src/routes'
 // var [elemento] = require('[./elemento]');
-var authors = require('./authors');
-var books = require('./books');
 const users = require('./users');
+const categories = require('./categories');
+// Pendientes
+const authors = require('./authors');   /* Dar revisión */
+const books = require('./books');
 
-// Por cada paquete de rutas de elemento se agrega una raíz al objeto Router
-// router.use('/rutaRaíz', variableRutas);
+// Por cada paquete de rutas se agrega una raíz al objeto Router
+// router.use('/rutaRaíz', rutas);
 // De forma práctica, esta es la ruta raiz para cada archivo de ruta
+router.use('/users', users);
+router.use('/categories', categories);
+// Pendientes
 router.use('/authors', authors);
 router.use('/books', books);
-router.use('/users', users);
 
 // Crear rutas del sistema, propias de la base de la API
-/*
-  router.get('/ruta', function(req, res){
-    res.status(200).json()
-  });
- */
 router.get('/', function (req, res) {
   console.log(`Acceso con método ${req.method} en dirección ${req.path}`);
-  res.status(200).json({ message: 'Conexión a Books API' });
+  res.sendStatus(200);
 });
 
 router.get('/');
