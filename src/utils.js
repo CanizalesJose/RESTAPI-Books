@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 // Middleware que verifica que se haya enviado un token en el campo head
 const authenticateToken = (req, res, next) => {
     // Obtener el token del encabezado
-    const token = req.headers['authorization']?.split(' ')[1];
+    const token = req.headers['authorization'];
 
     // Si no se ingresa un token, regresa estado de error
     if (!token) return res.sendStatus(401);
@@ -28,11 +29,15 @@ const authorizeRoles = (roles) => {
 }
 
 const printPath = (path, method) => {
-    console.log(`${method} on route ${path
+    console.log(`${method} on route ${path}`);
+}
 
-    }`);
+const encryptText = (text) => {
+    const salt = bcrypt.genSaltSync(10);
+    const hashedText = bcrypt.hashSync(text, salt);
+    return hashedText
 }
 
 module.exports = {
-    authenticateToken, printPath, authorizeRoles
+    authenticateToken, printPath, authorizeRoles, encryptText
 }
