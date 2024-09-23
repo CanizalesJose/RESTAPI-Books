@@ -16,16 +16,17 @@ CREATE TABLE Categories(
 );
 
 CREATE TABLE Books(
-    bookId VARCHAR(15) PRIMARY KEY,
-    bookTitle VARCHAR(100),
+    id VARCHAR(15) PRIMARY KEY,
+    title VARCHAR(100),
     isbn VARCHAR(18),
-    bookAuthor VARCHAR(15),
+    author VARCHAR(15),
     publisher VARCHAR(100),
     publishYear INT,
-    bookCategory VARCHAR(15),
-    bookCopies INT,
-    FOREIGN KEY (bookAuthor) REFERENCES Authors(authorId),
-    FOREIGN KEY (bookCategory) REFERENCES Categories(categoryId)
+    category VARCHAR(15),
+    copies INT,
+    imageUrl VARCHAR(255) DEFAULT 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s',
+    FOREIGN KEY (author) REFERENCES Authors(id),
+    FOREIGN KEY (category) REFERENCES Categories(id)
 );
 
 CREATE TABLE Users(
@@ -36,10 +37,11 @@ CREATE TABLE Users(
 
 
 INSERT INTO Users(userName, userPassword, usertype) VALUES 
-('canizales', '$2a$10$gg0gsMs9mqq3w061FuN7HuJjyumVgwQtsiXBtg/.IpFwqXixRQvcK', '1');
+('canizales', '$2a$10$gg0gsMs9mqq3w061FuN7HuJjyumVgwQtsiXBtg/.IpFwqXixRQvcK', 'admin'),
+('usuario', '$2a$10$gg0gsMs9mqq3w061FuN7HuJjyumVgwQtsiXBtg/.IpFwqXixRQvcK', 'client');
 
 
-INSERT INTO Authors (authorId, authorName, authorNationality) VALUES
+INSERT INTO Authors (id, fullName, nationality) VALUES
 ('A001', 'Gabriel García Márquez', 'Colombiano'),
 ('A002', 'J.K. Rowling', 'Británica'),
 ('A003', 'George Orwell', 'Británico'),
@@ -56,7 +58,7 @@ INSERT INTO Authors (authorId, authorName, authorNationality) VALUES
 ('A014', 'Paulo Coelho', 'Brasileño'),
 ('A015', 'Chimamanda Ngozi Adichie', 'Nigeriana');
 
-INSERT INTO Categories (categoryId, categoryDescription) VALUES
+INSERT INTO Categories (id, descr) VALUES
 ('C001', 'Ficción'),
 ('C002', 'No Ficción'),
 ('C003', 'Ciencia'),
@@ -74,7 +76,7 @@ INSERT INTO Categories (categoryId, categoryDescription) VALUES
 ('C015', 'Religión');
 
 -- Libros de Gabriel García Márquez
-INSERT INTO Books (bookId, bookTitle, isbn, bookAuthor, publisher, publishYear, bookCategory, bookCopies) VALUES
+INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, copies) VALUES
 ('B001', 'Cien años de soledad', '978-0060883287', 'A001', 'Random House', 1967, 'C001', 10),
 ('B002', 'El otoño del patriarca', '978-0307389730', 'A001', 'Vintage', 1975, 'C001', 8),
 ('B003', 'El amor en los tiempos del cólera', '978-0307389730', 'A001', 'Vintage', 1985, 'C001', 7),
