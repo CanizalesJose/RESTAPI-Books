@@ -34,7 +34,7 @@ Al usar `npm run dev` se ejecuta el script `nodemon app.js` el cual permite ejec
 - ~~Endpoints de usuarios~~
 - Documentar endpoints de usuarios
 - ~~DAO para categorias~~
-- Endpoints de categorias
+- ~~Endpoints de categorias~~
 - Documentar endpoints de categorias
 - DAO para Autores
 - Endpoints de autores
