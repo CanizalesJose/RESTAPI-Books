@@ -5,14 +5,14 @@ CREATE DATABASE booksCenter;
 USE booksCenter;
 
 CREATE TABLE Authors(
-    authorId VARCHAR(15) PRIMARY KEY,
-    authorName VARCHAR(100),
-    authorNationality VARCHAR(50)
+    id VARCHAR(15) PRIMARY KEY,
+    fullName VARCHAR(100),
+    nationality VARCHAR(50)
 );
 
 CREATE TABLE Categories(
-    categoryId VARCHAR(15) PRIMARY KEY,
-    categoryDescription VARCHAR(100)
+    id VARCHAR(15) PRIMARY KEY,
+    descr VARCHAR(100)
 );
 
 CREATE TABLE Books(
@@ -25,8 +25,8 @@ CREATE TABLE Books(
     category VARCHAR(15),
     copies INT,
     imageUrl VARCHAR(255) DEFAULT 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s',
-    FOREIGN KEY (author) REFERENCES Authors(id),
-    FOREIGN KEY (category) REFERENCES Categories(id)
+    FOREIGN KEY (author) REFERENCES Authors(id) ON DELETE SET NULL,
+    FOREIGN KEY (category) REFERENCES Categories(id) ON DELETE SET NULL
 );
 
 CREATE TABLE Users(
@@ -42,38 +42,38 @@ INSERT INTO Users(userName, userPassword, usertype) VALUES
 
 
 INSERT INTO Authors (id, fullName, nationality) VALUES
-('A001', 'Gabriel García Márquez', 'Colombiano'),
-('A002', 'J.K. Rowling', 'Británica'),
-('A003', 'George Orwell', 'Británico'),
-('A004', 'Haruki Murakami', 'Japonés'),
+('A001', 'Gabriel García Marquez', 'Colombiano'),
+('A002', 'J.K. Rowling', 'Britanica'),
+('A003', 'George Orwell', 'Britanico'),
+('A004', 'Haruki Murakami', 'Japones'),
 ('A005', 'Isabel Allende', 'Chilena'),
 ('A006', 'Stephen King', 'Estadounidense'),
-('A007', 'Jane Austen', 'Británica'),
+('A007', 'Jane Austen', 'Britanica'),
 ('A008', 'Mark Twain', 'Estadounidense'),
-('A009', 'Agatha Christie', 'Británica'),
+('A009', 'Agatha Christie', 'Britanica'),
 ('A010', 'F. Scott Fitzgerald', 'Estadounidense'),
-('A011', 'Hermann Hesse', 'Alemán'),
+('A011', 'Hermann Hesse', 'Aleman'),
 ('A012', 'Leo Tolstoy', 'Ruso'),
-('A013', 'Franz Kafka', 'Alemán'),
+('A013', 'Franz Kafka', 'Aleman'),
 ('A014', 'Paulo Coelho', 'Brasileño'),
 ('A015', 'Chimamanda Ngozi Adichie', 'Nigeriana');
 
 INSERT INTO Categories (id, descr) VALUES
-('C001', 'Ficción'),
-('C002', 'No Ficción'),
+('C001', 'Ficcion'),
+('C002', 'No Ficcion'),
 ('C003', 'Ciencia'),
 ('C004', 'Historia'),
-('C005', 'Fantasía'),
-('C006', 'Biografía'),
+('C005', 'Fantasia'),
+('C006', 'Biografia'),
 ('C007', 'Autoayuda'),
 ('C008', 'Misterio'),
-('C009', 'Romántico'),
-('C010', 'Ciencia Ficción'),
+('C009', 'Romantico'),
+('C010', 'Ciencia Ficcion'),
 ('C011', 'Terror'),
-('C012', 'Clásicos'),
+('C012', 'Clasicos'),
 ('C013', 'Cultura'),
-('C014', 'Política'),
-('C015', 'Religión');
+('C014', 'Politica'),
+('C015', 'Religion');
 
 -- Libros de Gabriel García Márquez
 INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, copies) VALUES
