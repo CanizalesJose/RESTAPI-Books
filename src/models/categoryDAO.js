@@ -5,8 +5,11 @@ class categoryDAO{
     static async find(id){
         const mainSqlQuery = 'SELECT id, descr FROM Categories WHERE id = ?';
         try {
-            if (!id || id.length == 0 || id.length > 15)
+            if (!id)
+                throw new Error("Faltan parametros");
+            if (id.length == 0 || id.length > 15)
                 throw new Error("El id no cumple los requisitos");
+                
             const categoria = await db.query(mainSqlQuery, [id]);
             if (!categoria)
                 throw new Error("Error en la consulta");
