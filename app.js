@@ -1,6 +1,7 @@
 require('dotenv').config();
 // Importar las librerias necesarias
 const express = require('express');
+const db = require('./src/connection/db');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const app = express();
@@ -18,7 +19,7 @@ const swaggerOptions = {
         openapi: '3.0.0',
         info: {
             title: 'BooksCenter API',
-            version: '24.09.21.8',
+            version: '24.09.24.8',
             description: 'Una API para la aplicación BooksCenter'
     },
     servers: [
@@ -43,7 +44,7 @@ app.listen(port);
 console.log(`API escuchando en http://${host}:${port}`);
 
 process.on('SIGINT', async () => {
-    await DB.closePool();
+    await db.closePool();
     console.log('Connection closed!');
     process.exit(0);
 });
