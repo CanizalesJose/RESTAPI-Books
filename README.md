@@ -34,18 +34,21 @@ Al usar `npm run dev` se ejecuta el script `nodemon app.js` el cual permite ejec
 - ~~***Actualizar DAO usuarios (relevar la validación de datos al DAO)***~~
 - ~~***Actualizar Endpoints usuarios (adecuar a los cambios anteriores)***~~
 - ~~***Endpoints de usuarios***~~
-- Documentar endpoints de usuarios
 - ~~***DAO para categorias***~~
 - ~~***Endpoints de categorias***~~
 - ~~***Actualizar DAO categorias (relevar la validación de datos al DAO)***~~
 - ~~***Actualizar Endpoints categorias (adecuar a los cambios anteriores)***~~
-- Documentar endpoints de categorias
 - ~~***DAO para Autores***~~
 - ~~***Endpoints de autores***~~
-- Documentar endpoints de autores
 - DAO para libros
 - Endpoints de libros
-- Documentar endpoints de libros
+- Implementar newError en DAO autores para gestion de codigos de salida
+- Implementar newError en DAO usuarios para gestion de codigos de salida
+- Implementar newError en DAO categorias para gestion de codigos de salida
 - Agregar prestamos a base de datos
 - DAO para prestamos
 - Endpoints de prestamos
+- Documentar endpoints de autores
+- Documentar endpoints de usuarios
+- Documentar endpoints de categorias
+- Documentar endpoints de libros
