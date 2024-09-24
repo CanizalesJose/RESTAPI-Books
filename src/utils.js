@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 // Middleware que verifica que se haya enviado un token en el campo head
 const authenticateToken = (req, res, next) => {
     // Obtener el token del encabezado
-    const token = req.headers['authorization'];
+    const token = req.headers['token'];
 
     // Si no se ingresa un token, regresa estado de error
     if (!token) return res.sendStatus(401);
