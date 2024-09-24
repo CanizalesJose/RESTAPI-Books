@@ -38,6 +38,12 @@ const encryptText = (text) => {
     return hashedText
 }
 
+const newError = (statusCode, message) => {
+    const error = new Error(message);
+    error.statusCode = statusCode;
+    return error;
+}
+
 module.exports = {
-    authenticateToken, printPath, authorizeRoles, encryptText
+    authenticateToken, printPath, authorizeRoles, encryptText, newError
 }
