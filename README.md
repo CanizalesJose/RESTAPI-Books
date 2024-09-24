@@ -31,24 +31,14 @@ Al usar `npm run dev` se ejecuta el script `nodemon app.js` el cual permite ejec
 #### Pendientes
 - ~~***Sistema de autorización por tokens***~~
 - ~~***DAO para usuarios***~~
-- Actualizar DAO usuarios (relevar la validación de datos al DAO)
-  - ~~***Find***~~
-  - ~~***FindAll***~~
-  - ~~***Register***~~
-  - ~~Update~~
-  - Delete
-- Actualizar Endpoints usuarios (adecuar a los cambios anteriores)
-  - ~~***Find***~~
-  - ~~***FindAll***~~
-  - ~~***Register***~~
-  - Update
-  - Delete
+- ~~***Actualizar DAO usuarios (relevar la validación de datos al DAO)***~~
+- ~~***Actualizar Endpoints usuarios (adecuar a los cambios anteriores)***~~
 - ~~***Endpoints de usuarios***~~
 - Documentar endpoints de usuarios
 - ~~***DAO para categorias***~~
 - ~~***Endpoints de categorias***~~
-- Actualizar DAO categorias (relevar la validación de datos al DAO)
-- Actualizar Endpoints categorias (adecuar a los cambios anteriores)
+- ~~***Actualizar DAO categorias (relevar la validación de datos al DAO)***~~
+- ~~***Actualizar Endpoints categorias (adecuar a los cambios anteriores)***~~
 - Documentar endpoints de categorias
 - ~~***DAO para Autores***~~
 - ~~***Endpoints de autores***~~
