@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS booksCenter;
 
-CREATE DATABASE booksCenter;
+CREATE DATABASE booksCenter default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 USE booksCenter;
 
@@ -8,12 +8,12 @@ CREATE TABLE Authors(
     id VARCHAR(15) PRIMARY KEY,
     fullName VARCHAR(100),
     nationality VARCHAR(50)
-);
+) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 CREATE TABLE Categories(
     id VARCHAR(15) PRIMARY KEY,
     descr VARCHAR(100)
-);
+) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 CREATE TABLE Books(
     id VARCHAR(15) PRIMARY KEY,
@@ -27,13 +27,13 @@ CREATE TABLE Books(
     imageUrl VARCHAR(255) DEFAULT 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s',
     FOREIGN KEY (author) REFERENCES Authors(id) ON DELETE SET NULL,
     FOREIGN KEY (category) REFERENCES Categories(id) ON DELETE SET NULL
-);
+) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 CREATE TABLE Users(
     userName VARCHAR(30) PRIMARY KEY,
     userPassword VARCHAR(100),
     usertype VARCHAR(15)
-);
+) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 
 INSERT INTO Users(userName, userPassword, usertype) VALUES 
