@@ -19,7 +19,7 @@ router.post('/login', async (req, res) => {
         return res.status(201).json({token: token, username: user[0]['username'], usertype: user[0]['usertype']});
     } catch (error) {
         if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
+            return res.status(500).json({message: 'Error interno en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -32,7 +32,7 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
         return res.status(200).json({message: 'El usuario se ha registrado'});
     } catch (error) {
         if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
+            return res.status(500).json({message: 'Error interno en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -45,7 +45,7 @@ router.post('/registerClient', async (req, res) => {
         return res.status(200).json({message: 'Registrado correctamente'});
     } catch (error) {
         if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
+            return res.status(500).json({message: 'Error interno en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -57,7 +57,7 @@ router.get('/findAll', async (req, res) => {
         return res.status(200).json(users); 
     } catch (error) {
         if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
+            return res.status(500).json({message: 'Error interno en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -70,7 +70,7 @@ router.patch('/update', authenticateToken, authorizeRoles(['client']), async (re
         return res.status(201).json({message: `Usuario actualizado correctamente`});
     } catch (error) {
         if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
+            return res.status(500).json({message: 'Error interno en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -83,7 +83,7 @@ router.delete('/delete', /* authenticateToken, authorizeRoles(['admin']), */ asy
         return res.status(200).json({message: 'Registro eliminado'});
     } catch (error) {
         if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
+            return res.status(500).json({message: 'Error interno en consulta'});
         return res.status(300).json({message: error.message});
     }
 });

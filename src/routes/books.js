@@ -3,14 +3,30 @@ const db = require('../connection/db');
 const bookDAO = require('../models/bookDAO');
 const {authenticateToken, authorizeRoles, printPath} = require('../utils');
 
-router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/find', async (req, res) => {
+    printPath(req.path, req.method);
+    try {
+        const {id} = req.body;
+        const result = await bookDAO.find(id);
+        return res.status(200).json(result);
+    } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error interno en consulta'});
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
+router.get('/findAll', async (req, res) => {
     printPath(req.path, req.method);
     try {
         const allBooks = await bookDAO.findAll();
-        res.status(200).json(allBooks);
+        return res.status(200).json(allBooks);
     } catch (error) {
-        console.error(error.message);
-        res.status(500).json({message: error.message});
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error interno en consulta'});
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 
