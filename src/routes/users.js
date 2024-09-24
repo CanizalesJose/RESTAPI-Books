@@ -18,8 +18,9 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({username: user[0]['username'], usertype: user[0]['usertype']}, process.env.SECRET_KEY, {expiresIn: '20m'});
         return res.status(201).json({token: token, username: user[0]['username'], usertype: user[0]['usertype']});
     } catch (error) {
-        console.error(error.message);
-        return res.status(500).json({message: error.message});
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
+        return res.status(400).json({message: error.message});
     }
 });
 // Recibe en el body un usuario y contraseña en texto plano
@@ -30,7 +31,9 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
         await userDAO.registerUser(username, password, usertype);
         return res.status(200).json({message: 'El usuario se ha registrado'});
     } catch (error) {
-        return res.status(500).json({message: error.message});
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
+        return res.status(400).json({message: error.message});
     }
 });
 // Ruta pública para que los clientes se registren a si mismos
@@ -41,6 +44,8 @@ router.post('/registerClient', async (req, res) => {
         await userDAO.registerUser(username, password, 'client');
         return res.status(200).json({message: 'Registrado correctamente'});
     } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -51,8 +56,9 @@ router.get('/findAll', async (req, res) => {
         const users = await userDAO.findAllUsers();
         return res.status(200).json(users); 
     } catch (error) {
-        console.error(error.message);
-        return res.status(500).json({message: error.message});
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
+        return res.status(400).json({message: error.message});
     }
 });
 // Ruta protegida para modificar usuarios
@@ -63,24 +69,22 @@ router.patch('/update', authenticateToken, authorizeRoles(['client']), async (re
         await userDAO.updateUser(username, password, usertype);
         return res.status(201).json({message: `Usuario actualizado correctamente`});
     } catch (error) {
-        return res.status(500).json({message: error.message});
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
+        return res.status(400).json({message: error.message});
     }
 });
 // Ruta protegida para eliminar usuarios
-router.delete('/delete', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.delete('/delete', /* authenticateToken, authorizeRoles(['admin']), */ async (req, res) => {
     printPath(req.path, req.method);
-    const {deletedUsername} = req.body;
-    if (!deletedUsername)
-        return res.status(400).json({message: 'Se debe enviar un nombre de usuario'});
     try {
-        const valid = await userDAO.deleteUser(deletedUsername);
-        if (valid == 1)
-            return res.status(500).json({message: 'Ocurrió un error al eliminar el usuario'});
-        if (valid == 0)
-            return res.status(200).json({message: 'Usuario eliminado con éxito'});
+        const {username} = req.body;
+        await userDAO.deleteUser(username);
+        return res.status(200).json({message: 'Registro eliminado'});
     } catch (error) {
-        console.error(error.message);
-        return res.status(500).json({message: error.message});
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
+        return res.status(300).json({message: error.message});
     }
 });
 // Middleware para gestionar rutas no existentes

@@ -8,6 +8,8 @@ router.get('/find', authenticateToken, authorizeRoles(['admin']), async (req, re
         const result = await authorDAO.find(id);
         return res.status(200).json(result);
     } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -17,6 +19,8 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
         const results = await authorDAO.findAll();
         return res.status(200).json(results);
     } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -27,6 +31,8 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
         await authorDAO.register(newId, newFullname, newNationality);
         return res.status(200).json({message: 'Autor registrado'});
     } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -37,6 +43,8 @@ router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req
         await authorDAO.update(id, newFullname, newNationality);
         return res.status(200).json({message: 'Autor actualizado'});
     } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
         return res.status(400).json({message: error.message});
     }
 });
@@ -47,6 +55,8 @@ router.delete('/delete', authenticateToken, authorizeRoles(['admin']), async (re
         await authorDAO.delete(id);
         return res.status(200).json({message: 'Autor eliminado'});
     } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: 'Error en consulta'});
         return res.status(400).json({message: error.message});
     }
 });

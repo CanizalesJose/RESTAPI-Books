@@ -6,14 +6,12 @@ class categoryDAO{
         const mainSqlQuery = 'SELECT id, descr FROM Categories WHERE id = ?';
         try {
             if (!id)
-                throw new Error("Faltan parametros");
+                throw new Error("Falta el parametro id");
             if (id.length == 0 || id.length > 15)
-                throw new Error("El id no cumple los requisitos");
-                
+                throw new Error("El id no cumple los requisitos de dato");
             const categoria = await db.query(mainSqlQuery, [id]);
             if (!categoria)
                 throw new Error("Error en la consulta");
-                
             return categoria;
         } catch (error) {
             throw error;
@@ -36,36 +34,43 @@ class categoryDAO{
     static async register(id, descr){
         const mainSqlQuery = 'INSERT Categories(id, descr) VALUES (?, ?)';
         try{
-            if (id.length > 15 || id.length == 0 || descr.length > 100 || descr.length == 0)
-                throw new Error('Los datos no cumplen los requisitos');
-                
+            if (!id)
+                throw new Error("Falta el parametro id");
+            if (!descr)
+                throw new Error("Falta el parametro descr");
+            if (id.length > 15 || id.length == 0)
+                throw new Error("El parametro id no cumple los requisitos de dato");
+            if (descr.length > 100 || descr.length == 0)
+                throw new Error('El parametro descr no cumple los requisitos de dato');
             const exists = await this.find(id);
             if (!exists)
                 throw new Error('Error en la consulta');
             if (exists && exists.length != 0)
                 throw new Error('El registro ya existe');
             await db.query(mainSqlQuery, [id, descr]);
-            return 0;
         }catch(error){
             throw error;
-            
         }
     }
     // Actualiza una categoria, regresa 1 si falla, 0 si no
-    static async update(updatedId, newDescr){
+    static async update(id, descr){
         const mainSqlQuery = 'UPDATE Categories SET descr = ? WHERE id = ?';
         try{
-            if (updatedId == 0)
-                throw new Error("El id no es valido");
-            if (newDescr == 0 || newDescr > 100)
-                throw new Error("La descripción no es valida");
-            const exists = await this.find(updatedId);
+            if (!id)
+                throw new Error("Falta el parametro id");
+            if (!descr)
+                throw new Error("Falta el parametro descr");
+                
+            if (id == 0 || id > 15)
+                throw new Error("El parametro id no cumple los requisitos de dato");
+            if (descr == 0 || descr > 100)
+                throw new Error("El parametro descr no cumple los requisitos de dato");
+            const exists = await this.find(id);
             if (!exists)
                 throw new Error("Error en la consulta");
-            if (exists && exists.length == 0)
+            if (exists.length == 0)
                 throw new Error("El registro no existe");
-            await db.query(mainSqlQuery, [newDescr, updatedId]);
-            return 0;
+            await db.query(mainSqlQuery, [descr, id]);
         } catch (error){
             throw error;
         }
@@ -74,15 +79,16 @@ class categoryDAO{
     static async delete(id){
         const mainSqlQuery = 'DELETE FROM Categories WHERE id = ?';
         try {
-            if (id && id.length == 0)
-                throw new Error("Los parametros no cumplen los requisitos");
+            if (!id)
+                throw new Error("Falta el parametro id");
+            if (id.length == 0 || id.length > 15)
+                throw new Error("El parametro id no cumple los requisitos de datos");
             const exists = await this.find(id);
             if (!exists)
                 throw new Error("Error en la consulta");
-            if (exists && exists.length == 0)
+            if (exists.length == 0)
                 throw new Error("El registro no existe");
             await db.query(mainSqlQuery, [id]);
-            return 0;
         } catch (error) {
             throw error;
         }

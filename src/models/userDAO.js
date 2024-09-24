@@ -106,7 +106,11 @@ class userDAO {
             if (!deletedUser)
                 throw new Error('Falta el parametro username');
             const exists = await this.findUser(deletedUser);
-            return 0;
+            if (!exists)
+                throw new Error("Error en la consulta");
+            if (exists.length == 0)
+                throw new Error("El registro no existe");
+            await db.query(mainSqlQuery, [deletedUser]);
         } catch (error) {
             throw error;
         }
