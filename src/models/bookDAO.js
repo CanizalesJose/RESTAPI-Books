@@ -1,45 +1,70 @@
 const categoryDAO = require('./categoryDAO');
+const authorDAO = require('./authorDAO');
+const {newError} = require('../utils');
 const db = require('../connection/db');
 
 class bookDAO {
+    // Regresa un registro en base al id
     static async find(id){
         const mainSqlQuery = 'SELECT id, title, isbn, author, publisher, publishYear, category, copies, imageUrl FROM Books WHERE id = ?';
         try {
-            const book = db.query(mainSqlQuery, [id]);
-            if (book)
-                return book;
-            else
-                return []
+            if (!id){
+                throw newError(400, "Falta el parametro id");
+            }
+            if (id.length == 0 || id.length > 15){
+                throw newError(400, "El parametro id no cumple los requisitos de dato");
+            }
+            const result = db.query(mainSqlQuery, [id]);
+            if (!result){
+                throw newError(500, "Error interno en consulta");
+            }
+            return result;
         } catch (error) {
-            return [];
+            throw error;
         }
     }
     // Regresa todos los libros registrados
     static async findAll(){
         const mainSqlQuery = 'SELECT id, title, isbn, author, publisher, publishYear, category, copies, imageUrl FROM Books';
         try {
-            const allBooks = await db.query(mainSqlQuery);
-            return allBooks;
+            const result = db.query(mainSqlQuery);
+            if (!result)
+                throw newError(500, "Error interno en consulta");
+            return result;
         } catch (error) {
-            return [];
+            throw error;
         }
     }
     // Registrar un nuevo libro
     static async register(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl){
-        const mainSqlQuery = 'INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, copies, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        const sqlQuery1 = 'INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, copies, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        const sqlQuery2 = 'INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, copies) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
         try {
-            // Si existe el libro, entonces no puede registrar nuevo
-            const exists = await this.find(id);
-            if (exists || exists.length > 0)
-                return 1;
-            // Si no existe el autor
-            // Si no existe la categoria
-            else{
-                await db.query(mainSqlQuery, [id, title, isbn, author, publisher, publishYear, category, copies, imageUrl]);
-            }
+            // Comprobar parametros
+            if (!id)
+                throw newError(400, "Falta el parametro id");
+            if (!title)
+                throw newError(400, "Falta el parametro title");
+            if (!isbn)
+                throw newError(400, "Falta el parametro isbn");
+            if (!author)
+                throw newError(400, "Falta el parametro author");
+            if (!publisher)
+                throw newError(400, "Falta el parametro publisher");
+            if (!publishYear)
+                throw newError(400, "Falta el parametro publishYear");
+            if (!category)
+                throw newError(400, "Falta el parametro category");
+            if (!copies)
+                throw newError(400, "Falta el parametro copies");
+            const includeImage = false;
+            if (imageUrl)
+                includeImage = true;
+            // Comprobar requisitos de datos
         } catch (error) {
-            return 1;
+            throw error;
         }
+
     }
 }
 
