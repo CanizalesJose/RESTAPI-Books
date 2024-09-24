@@ -30,19 +30,33 @@ router.get('/findAll', async (req, res) => {
     }
 });
 
-router.post('/register',authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
-    const {newId, newTitle, newIsbn, newAuthor, newPublisher, newPublishYear, newCategory, newCopies, newImageUrl} = req.body;
-    // Si no hay url de imagen, usa la predeterminada
-    if (!newImageUrl)
-        newImageUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s';
-    // Si falta al menos un otro argumento no se puede registrar
-    if (!newId || !newTitle || !newIsbn || !newAuthor || !newPublisher || !newPublishYear || !newCategory || !newCopies){
-        res.status(400).json({message: 'Faltan parametros'});
+    try{
+        const {id, title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
+        await bookDAO.register(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl);
+        return res.status(201).json({message: "Libro registrado correctamente"});
+    } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: "Error interno en consulta"});
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
-    
 });
 
+router.patch('/update', async (req, res) => {
+    printPath(req.path, req.method);
+    try{
+        const {id, title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
+        await bookDAO.update(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl);
+        return res.status(200).json({message: "Libro actualizado"});
+    } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: "Error interno en consulta"});
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
 router.use((req, res, next) =>{
     res.status(404).json([{message: `The requested route with method ${req.method} does not exists`}]);
 });
