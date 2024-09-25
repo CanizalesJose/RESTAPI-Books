@@ -30,7 +30,7 @@ router.get('/findAll', async (req, res) => {
     }
 });
 
-router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.post('/register', async (req, res) => {
     printPath(req.path, req.method);
     try{
         const {id, title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
@@ -50,6 +50,20 @@ router.patch('/update', async (req, res) => {
         const {id, title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
         await bookDAO.update(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl);
         return res.status(200).json({message: "Libro actualizado"});
+    } catch (error) {
+        if (error.sqlState)
+            return res.status(500).json({message: "Error interno en consulta"});
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
+router.delete('/delete', async (req, res) => {
+    printPath(req.path, req.method);
+    try {
+        const {id} = req.body;
+        await bookDAO.delete(id);
+        return res.status(200).json({message: "Registro eliminado"});
     } catch (error) {
         if (error.sqlState)
             return res.status(500).json({message: "Error interno en consulta"});

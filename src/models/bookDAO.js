@@ -57,7 +57,7 @@ class bookDAO {
                 throw newError(400, "Falta el parametro category");
             if (!copies)
                 throw newError(400, "Falta el parametro copies");
-            const includeImage = false;
+            var includeImage = false;
             if (imageUrl)
                 includeImage = true;
             // Comprobar requisitos de datos
