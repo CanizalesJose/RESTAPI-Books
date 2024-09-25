@@ -45,6 +45,5 @@ console.log(`API escuchando en http://${host}:${port}`);
 
 process.on('SIGINT', async () => {
     await db.closePool();
-    console.log('Connection closed!');
     process.exit(0);
 });
