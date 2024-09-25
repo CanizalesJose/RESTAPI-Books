@@ -25,14 +25,31 @@ CREATE TABLE Books(
     category VARCHAR(15),
     copies INT,
     imageUrl VARCHAR(255) DEFAULT 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s',
-    FOREIGN KEY (author) REFERENCES Authors(id) ON DELETE SET NULL,
-    FOREIGN KEY (category) REFERENCES Categories(id) ON DELETE SET NULL
+    FOREIGN KEY (author) REFERENCES Authors(id) ON DELETE RESTRICT,
+    FOREIGN KEY (category) REFERENCES Categories(id) ON DELETE RESTRICT
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 CREATE TABLE Users(
     userName VARCHAR(30) PRIMARY KEY,
     userPassword VARCHAR(100),
     usertype VARCHAR(15)
+) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
+
+CREATE TABLE Loans(
+    id VARCHAR(15) PRIMARY KEY,
+    username VARCHAR(30),
+    loanDate DATE,
+    returnDate DATE,
+    FOREIGN KEY (username) REFERENCES Users(username) ON DELETE RESTRICT
+) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
+
+CREATE TABLE LoanDetails(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    loanId VARCHAR(15),
+    bookid VARCHAR(15),
+    returned BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (loanId) REFERENCES Loans(id) ON DELETE RESTRICT,
+    FOREIGN KEY (bookId) REFERENCES Books(id) ON DELETE RESTRICT
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 

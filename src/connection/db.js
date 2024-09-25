@@ -19,14 +19,12 @@ class DB {
             const [results, fields] = await this.pool.execute(sql, params);
             return results;
         } catch (err) {
-            console.error('Error en la consulta:', err);
             throw err;
         }
     }
 
     async closePool() {
         await this.pool.end();
-        console.log('Pool de conexiones cerrado');
     }
 }
 
