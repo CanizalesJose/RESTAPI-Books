@@ -3,6 +3,7 @@ const authorDAO = require('../models/authorDAO');
 const { authenticateToken, authorizeRoles, printPath } = require('../utils');
 // Ruta protegida para buscar un autor
 router.get('/find', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    printPath(req.path, req.method);
     const {id} = req.body;
     try {
         const result = await authorDAO.find(id);
@@ -15,6 +16,7 @@ router.get('/find', authenticateToken, authorizeRoles(['admin']), async (req, re
 });
 // Ruta protegida para regresar todos los autores
 router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    printPath(req.path, req.method);
     try {
         const results = await authorDAO.findAll();
         return res.status(200).json(results);
@@ -26,6 +28,7 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
 });
 // Ruta protegida para registrar un nuevo autor
 router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    printPath(req.path, req.method);
     const {newId, newFullname, newNationality} = req.body;
     try {
         await authorDAO.register(newId, newFullname, newNationality);
@@ -38,6 +41,7 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
 });
 // Ruta para actualizar un registro
 router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    printPath(req.path, req.method);
     const {id, newFullname, newNationality} = req.body;
     try {
         await authorDAO.update(id, newFullname, newNationality);
@@ -49,14 +53,19 @@ router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req
     }
 });
 // Ruta para eliminar un registro
-router.delete('/delete', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.delete('/delete'/* , authenticateToken, authorizeRoles(['admin']) */, async (req, res) => {
+    printPath(req.path, req.method);
     const {id} = req.body;
     try {
         await authorDAO.delete(id);
         return res.status(200).json({message: 'Autor eliminado'});
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            else
+                return res.status(500).json({message: 'Error interno en consulta'});
+        }
         return res.status(400).json({message: error.message});
     }
 });

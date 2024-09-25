@@ -10,8 +10,11 @@ router.get('/find', async (req, res) => {
         const result = await bookDAO.find(id);
         return res.status(200).json(result);
     } catch (error) {
-        if (error.sqlState)
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
             return res.status(500).json({message: 'Error interno en consulta'});
+        }
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});
     }
@@ -65,8 +68,12 @@ router.delete('/delete', async (req, res) => {
         await bookDAO.delete(id);
         return res.status(200).json({message: "Registro eliminado"});
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: "Error interno en consulta"});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            else
+                return res.status(500).json({message: 'Error interno en consulta'});
+        }
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});
     }

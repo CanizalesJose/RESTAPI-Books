@@ -82,9 +82,13 @@ router.delete('/delete', /* authenticateToken, authorizeRoles(['admin']), */ asy
         await userDAO.deleteUser(username);
         return res.status(200).json({message: 'Registro eliminado'});
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: 'Error interno en consulta'});
-        return res.status(300).json({message: error.message});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            else
+                return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        return res.status(500).json({message: error.message});
     }
 });
 // Middleware para gestionar rutas no existentes
