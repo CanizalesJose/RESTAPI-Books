@@ -2,7 +2,7 @@ const router = require('express').Router();
 const userDAO = require('../models/userDAO');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { authenticateToken, authorizeRoles, printPath, encryptText } = require('../utils');
+const { authenticateToken, authorizeRoles, printPath } = require('../utils');
 
 // Recibe en el body un username y password, regresa 201 y el token generado si el usuario existe
 router.post('/login', async (req, res) => {
@@ -15,12 +15,21 @@ router.post('/login', async (req, res) => {
         if (!user || user.length == 0 || !bcrypt.compareSync(password, user[0]['userpassword'])){
             return res.status(401).json({message: 'Credenciales inválidas'});
         }
-        const token = jwt.sign({username: user[0]['username'], usertype: user[0]['usertype']}, process.env.SECRET_KEY, {expiresIn: '20m'});
+        const token = jwt.sign({username: user[0]['username'], usertype: user[0]['usertype']}, process.env.SECRET_KEY, {expiresIn: '5m'});
         return res.status(201).json({token: token, username: user[0]['username'], usertype: user[0]['usertype']});
     } catch (error) {
         if (error.sqlState)
             return res.status(500).json({message: 'Error interno en consulta'});
         return res.status(400).json({message: error.message});
+    }
+});
+// Confirma que un token siga en funcionamiento
+router.post('/validToken', authenticateToken, async (req, res) => {
+    printPath(req.path, req.method);
+    try {
+        return res.status(200).json(req.user);
+    } catch (error) {
+        return res.status(400).json({clearToken: true});
     }
 });
 // Recibe en el body un usuario y contraseña en texto plano
