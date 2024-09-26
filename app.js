@@ -4,11 +4,13 @@ const express = require('express');
 const db = require('./src/connection/db');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const cors = require('cors');
 const app = express();
 
 // Middleware para recuperar datos del post
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 // Recuperar puerto de las variables de entorno o usar 5000 por defecto
 const port = process.env.PORT || 5000;
