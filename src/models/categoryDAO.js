@@ -1,4 +1,5 @@
 const db = require('../connection/db');
+const {newError} = require('../utils');
 
 class categoryDAO{
     // Busca una categoria en base a una id, regresa [] si falla, [{id:?, descr:?}] si no
@@ -6,12 +7,12 @@ class categoryDAO{
         const mainSqlQuery = 'SELECT id, descr FROM Categories WHERE id = ?';
         try {
             if (!id)
-                throw new Error("Falta el parametro id");
+                throw newError(400, "Falta el parametro id");
             if (id.length == 0 || id.length > 15)
-                throw new Error("El id no cumple los requisitos de dato");
+                throw newError(400, "El id no cumple los requisitos de dato");
             const categoria = await db.query(mainSqlQuery, [id]);
             if (!categoria)
-                throw new Error("Error en la consulta");
+                throw newError(500, "Error en la consulta");
             return categoria;
         } catch (error) {
             throw error;
@@ -23,7 +24,7 @@ class categoryDAO{
         try {
             const categories = await db.query(mainSqlQuery);
             if (!categories)
-                throw new Error("Error en la consulta");
+                throw newError(500, "Error en la consulta");
             return categories;
                 
         } catch (error) {
@@ -35,18 +36,18 @@ class categoryDAO{
         const mainSqlQuery = 'INSERT Categories(id, descr) VALUES (?, ?)';
         try{
             if (!id)
-                throw new Error("Falta el parametro id");
+                throw newError(400, "Falta el parametro id");
             if (!descr)
-                throw new Error("Falta el parametro descr");
+                throw newError(400, "Falta el parametro descr");
             if (id.length > 15 || id.length == 0)
-                throw new Error("El parametro id no cumple los requisitos de dato");
+                throw newError(400, "El parametro id no cumple los requisitos de dato");
             if (descr.length > 100 || descr.length == 0)
-                throw new Error('El parametro descr no cumple los requisitos de dato');
+                throw newError(400, 'El parametro descr no cumple los requisitos de dato');
             const exists = await this.find(id);
             if (!exists)
-                throw new Error('Error en la consulta');
+                throw newError(500, 'Error en la consulta');
             if (exists && exists.length != 0)
-                throw new Error('El registro ya existe');
+                throw newError(400, 'El registro ya existe');
             await db.query(mainSqlQuery, [id, descr]);
         }catch(error){
             throw error;
@@ -57,19 +58,19 @@ class categoryDAO{
         const mainSqlQuery = 'UPDATE Categories SET descr = ? WHERE id = ?';
         try{
             if (!id)
-                throw new Error("Falta el parametro id");
+                throw newError(400, "Falta el parametro id");
             if (!descr)
-                throw new Error("Falta el parametro descr");
+                throw newError(400, "Falta el parametro descr");
                 
             if (id == 0 || id > 15)
-                throw new Error("El parametro id no cumple los requisitos de dato");
+                throw newError(400, "El parametro id no cumple los requisitos de dato");
             if (descr == 0 || descr > 100)
-                throw new Error("El parametro descr no cumple los requisitos de dato");
+                throw newError(400, "El parametro descr no cumple los requisitos de dato");
             const exists = await this.find(id);
             if (!exists)
-                throw new Error("Error en la consulta");
+                throw newError(500, "Error en la consulta");
             if (exists.length == 0)
-                throw new Error("El registro no existe");
+                throw newError(400, "El registro no existe");
             await db.query(mainSqlQuery, [descr, id]);
         } catch (error){
             throw error;
@@ -80,14 +81,14 @@ class categoryDAO{
         const mainSqlQuery = 'DELETE FROM Categories WHERE id = ?';
         try {
             if (!id)
-                throw new Error("Falta el parametro id");
+                throw newError(400, "Falta el parametro id");
             if (id.length == 0 || id.length > 15)
-                throw new Error("El parametro id no cumple los requisitos de datos");
+                throw newError(400, "El parametro id no cumple los requisitos de datos");
             const exists = await this.find(id);
             if (!exists)
-                throw new Error("Error en la consulta");
+                throw newError(500, "Error en la consulta");
             if (exists.length == 0)
-                throw new Error("El registro no existe");
+                throw newError(400, "El registro no existe");
             await db.query(mainSqlQuery, [id]);
         } catch (error) {
             throw error;
