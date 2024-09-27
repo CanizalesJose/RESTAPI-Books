@@ -10,10 +10,10 @@ const authenticateToken = (req, res, next) => {
 
     jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
         // Si el token no es valido, regresa un código de error
-        if (err) return res.sendStatus(403);
+        if (err) return res.status(403).json({clearToken: true});
         // Si no se genera el error, entonces guarda los datos del usuario que generó el token en la variable de la request
         req.user = user;
-        // Pasa al siguiente middleware, probablemente la función del endpoint
+        // Pasa al siguiente middleware, probablemente la función del endpoint o authorizeRoles
         next();
     });
 };
@@ -22,7 +22,7 @@ const authorizeRoles = (roles) => {
     return (req, res, next) => {
         const user = req.user;
         if (!roles.includes(user['usertype'])){
-            return res.sendStatus(403);
+            return res.status(403).json({clearToken: false});
         }
         next();
     }
