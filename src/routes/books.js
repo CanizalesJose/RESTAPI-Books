@@ -54,8 +54,11 @@ router.patch('/update', async (req, res) => {
         await bookDAO.update(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl);
         return res.status(200).json({message: "Libro actualizado"});
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: "Error interno en consulta"});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});
     }
@@ -71,8 +74,7 @@ router.delete('/delete', async (req, res) => {
         if (error.sqlState){
             if (error.errno == 1451)
                 return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
-            else
-                return res.status(500).json({message: 'Error interno en consulta'});
+            return res.status(500).json({message: 'Error interno en consulta'});
         }
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});

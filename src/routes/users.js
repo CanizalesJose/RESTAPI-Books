@@ -18,9 +18,13 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({username: user[0]['username'], usertype: user[0]['usertype']}, process.env.SECRET_KEY, {expiresIn: '5m'});
         return res.status(201).json({token: token, username: user[0]['username'], usertype: user[0]['usertype']});
     } catch (error) {
-        if (error.sqlState)
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
             return res.status(500).json({message: 'Error interno en consulta'});
-        return res.status(400).json({message: error.message});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Confirma que un token siga en funcionamiento
@@ -40,9 +44,13 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
         await userDAO.registerUser(username, password, usertype);
         return res.status(200).json({message: 'El usuario se ha registrado'});
     } catch (error) {
-        if (error.sqlState)
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
             return res.status(500).json({message: 'Error interno en consulta'});
-        return res.status(400).json({message: error.message});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta pública para que los clientes se registren a si mismos

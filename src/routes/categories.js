@@ -8,9 +8,13 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
         const categories = await categoryDAO.findAll();
         return res.status(200).json(categories);
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
-        return res.status(400).json({message: error.message});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta protegida para generar una nueva categoría
@@ -21,9 +25,13 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
         await categoryDAO.register(id, descr);
         return res.status(200).json({message: 'Categoria creado correctamente'});
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
-        return res.status(400).json({message: error.message});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta protegida para actualizar una categoria
@@ -34,9 +42,13 @@ router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req
         await categoryDAO.update(id, descr);
         return res.status(201).json({message: 'Categoria fue actualizada correctamente'});
     }catch(error) {
-        if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
-        return res.status(400).json({message: error.message});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta protegida para eliminar una categoría
@@ -52,7 +64,8 @@ router.delete('/delete', authenticateToken, authorizeRoles(['admin']), async (re
                 return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
             return res.status(500).json({message: 'Error interno en consulta'});
         }
-        return res.status(400).json({message: error.message});
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta por defecto en caso de no existir la solicitada

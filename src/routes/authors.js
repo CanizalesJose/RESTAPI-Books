@@ -9,9 +9,13 @@ router.get('/find', authenticateToken, authorizeRoles(['admin']), async (req, re
         const result = await authorDAO.find(id);
         return res.status(200).json(result);
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
-        return res.status(400).json({message: error.message});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta protegida para regresar todos los autores
@@ -21,9 +25,13 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
         const results = await authorDAO.findAll();
         return res.status(200).json(results);
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
-        return res.status(400).json({message: error.message});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta protegida para registrar un nuevo autor
@@ -34,9 +42,13 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
         await authorDAO.register(newId, newFullname, newNationality);
         return res.status(200).json({message: 'Autor registrado'});
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
-        return res.status(400).json({message: error.message});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta para actualizar un registro
@@ -47,9 +59,13 @@ router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req
         await authorDAO.update(id, newFullname, newNationality);
         return res.status(200).json({message: 'Autor actualizado'});
     } catch (error) {
-        if (error.sqlState)
-            return res.status(500).json({message: 'Error en consulta'});
-        return res.status(400).json({message: error.message});
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta para eliminar un registro
@@ -63,10 +79,10 @@ router.delete('/delete'/* , authenticateToken, authorizeRoles(['admin']) */, asy
         if (error.sqlState){
             if (error.errno == 1451)
                 return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
-            else
-                return res.status(500).json({message: 'Error interno en consulta'});
+            return res.status(500).json({message: 'Error interno en consulta'});
         }
-        return res.status(400).json({message: error.message});
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta por defecto cuando se hace una solicitud a una ruta no definida
