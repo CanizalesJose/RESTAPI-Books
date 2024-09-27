@@ -44,38 +44,50 @@ router.post('/registerClient', async (req, res) => {
         await userDAO.registerUser(username, password, 'client');
         return res.status(200).json({message: 'Registrado correctamente'});
     } catch (error) {
-        if (error.sqlState)
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
             return res.status(500).json({message: 'Error interno en consulta'});
-        return res.status(400).json({message: error.message});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta protegida, regresa todos los usuarios autenticados
-router.get('/findAll', async (req, res) => {
+router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
         const users = await userDAO.findAllUsers();
         return res.status(200).json(users); 
     } catch (error) {
-        if (error.sqlState)
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
             return res.status(500).json({message: 'Error interno en consulta'});
-        return res.status(400).json({message: error.message});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta protegida para modificar usuarios
-router.patch('/update', authenticateToken, authorizeRoles(['client']), async (req, res) =>{
+router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req, res) =>{
     printPath(req.path, req.method);
     try {
         const {username, password, usertype} = req.body;
         await userDAO.updateUser(username, password, usertype);
         return res.status(201).json({message: `Usuario actualizado correctamente`});
     } catch (error) {
-        if (error.sqlState)
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
             return res.status(500).json({message: 'Error interno en consulta'});
-        return res.status(400).json({message: error.message});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Ruta protegida para eliminar usuarios
-router.delete('/delete', /* authenticateToken, authorizeRoles(['admin']), */ async (req, res) => {
+    router.delete('/delete', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
         const {username} = req.body;
@@ -85,10 +97,10 @@ router.delete('/delete', /* authenticateToken, authorizeRoles(['admin']), */ asy
         if (error.sqlState){
             if (error.errno == 1451)
                 return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
-            else
-                return res.status(500).json({message: 'Error interno en consulta'});
+            return res.status(500).json({message: 'Error interno en consulta'});
         }
-        return res.status(500).json({message: error.message});
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
     }
 });
 // Middleware para gestionar rutas no existentes

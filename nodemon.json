@@ -1,5 +1,5 @@
 {
-    "watch": ["src", "swagger.yaml", "app.js"],
+    "watch": ["src", "docs", "app.js"],
     "ext": "js,json,yaml",
     "ignore": ["node_modules"],
     "exec": "node app.js"

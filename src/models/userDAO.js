@@ -1,5 +1,5 @@
 const db = require('../connection/db');
-const {encryptText} = require('../utils');
+const {encryptText, newError} = require('../utils');
 
 class userDAO {
     static async findAllUsers(){
@@ -7,7 +7,7 @@ class userDAO {
         try {
             const results = await db.query(sqlQuery);
             if (!results)
-                throw new Error('Error en la consulta');
+                throw newError(500, 'Error en la consulta');
             return results;
         } catch (error) {
             throw error;
@@ -18,12 +18,12 @@ class userDAO {
         const sqlQuery = 'SELECT username, userpassword, usertype FROM Users WHERE username = ?;'
         try {
             if (!username)
-                throw new Error("Falta parametro username");
+                throw newError(400, "Falta parametro username");
             if (username.length == 0 || username.length > 30)
-                throw new Error("El username no cumple los requisitos de dato");
+                throw newError(400, "El username no cumple los requisitos de dato");
             const result = await db.query(sqlQuery, [username]);
             if (!result)
-                throw new Error("Error en la consulta");
+                throw newError(500, "Error en la consulta");
             return result;
         } catch (error) {
             throw error;
@@ -34,25 +34,25 @@ class userDAO {
         const mainSqlQuery = 'INSERT Users(username, userpassword, usertype) VALUES (?, ?, ?)';
         try{
             if (!username && !password)
-                throw new Error('Faltan los parametros username y password');
+                throw newError(400, 'Faltan los parametros username y password');
             if (!username)
-                throw new Error('Falta el parametro username');
+                throw newError(400, 'Falta el parametro username');
             if (!password)
-                throw new Error('Falta el parametro password');
+                throw newError(400, 'Falta el parametro password');
             if (!usertype)
-                throw new Error('Falta el parametro usertype');
+                throw newError(400, 'Falta el parametro usertype');
             if (username.length == 0 || username.length > 30)
-                throw new Error('El parametro username no cumple los requisitos de dato');
+                throw newError(400, 'El parametro username no cumple los requisitos de dato');
             if (password.length == 0 || password.length > 100)
-                throw new Error('El parametro password no cumple los requisitos de dato');
+                throw newError(400, 'El parametro password no cumple los requisitos de dato');
             if (usertype.length == 0 || usertype.length > 15)
-                throw new Error('El parametro usertype no cumple los requisitos de dato');
+                throw newError(400, 'El parametro usertype no cumple los requisitos de dato');
             // Comprobar si ya existe
             const result = await this.findUser(username);
             if (!result)
-                throw new Error("Error en la consulta");
+                throw newError(500, "Error en la consulta");
             if (result.length > 0)
-                throw new Error("El usuario ya existe");
+                throw newError(400, "El usuario ya existe");
             // Los datos son correctos, se encripta la contraseña
             password = encryptText(password);
             console.log(password);
@@ -68,26 +68,26 @@ class userDAO {
         try {
             // Revisar parametro username
             if (!username)
-                throw new Error("Falta el parametro username");
+                throw newError(400, "Falta el parametro username");
             var changePassword = false;
             var changeUsertype = false;
             if (newPassword){
                 if (newPassword.length == 0 || newPassword.length > 100)
-                    throw new Error("El parametro password no cumple los requisitos de dato");
+                    throw newError(400, "El parametro password no cumple los requisitos de dato");
                 changePassword = true;
             }
             if (newUsertype){
                 if (newUsertype.length == 0 || newUsertype.length > 15)
-                    throw new Error("El parametro usertype no cumple los requisitos de dato");
+                    throw newError(400, "El parametro usertype no cumple los requisitos de dato");
                 changeUsertype = true;
             }
             if (changePassword == false && changeUsertype == false)
-                throw new Error("Falta el parametro password o usertype");
+                throw newError(400, "Falta el parametro password o usertype");
             const result = await this.findUser(username);
             if (!result)
-                throw new Error("Error en la consulta");
+                throw newError(500, "Error en la consulta");
             if (result.length == 0)
-                throw new Error("El registro no existe");
+                throw newError(400, "El registro no existe");
             // Aplicar update
             if (changePassword){
                 newPassword = encryptText(newPassword);
@@ -104,12 +104,12 @@ class userDAO {
         const mainSqlQuery = 'DELETE FROM Users WHERE username = ?';
         try {
             if (!deletedUser)
-                throw new Error('Falta el parametro username');
+                throw newError(400, 'Falta el parametro username');
             const exists = await this.findUser(deletedUser);
             if (!exists)
-                throw new Error("Error en la consulta");
+                throw newError(400, "Error en la consulta");
             if (exists.length == 0)
-                throw new Error("El registro no existe");
+                throw newError(400, "El registro no existe");
             await db.query(mainSqlQuery, [deletedUser]);
         } catch (error) {
             throw error;

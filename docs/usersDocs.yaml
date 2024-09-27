@@ -1,0 +1,213 @@
+tags:
+  - name: /api/users
+    description: Rutas relacionadas con el proceso de login, autenticación y gestión de usuarios.
+
+/login:
+  post:
+    tags:
+      - /api/users
+    description: Recibe credenciales de usuario y genera un token temporal.
+    summary: Autentica al usuario y genera un JWT.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+                description: Nombre de usuario, debe tener entre 1 y 15 caracteres.
+                example: usuario123
+              password:
+                type: string
+                description: Contraseña secreta de usuario, de preferencia usar una fuerte. Debe tener entre 1 y 100 caracteres. No hay requisitos especiales.
+    responses:
+      201:
+        description: Autenticación exitosa, se devuelve un token JWT.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Token de autenticación. Se debe guardar en el navegador y mandar en el header de las peticiones http del usuario, ya que se usa para autenticar su identidad. Dura 20 minutos.
+                username:
+                  type: string
+                  description: Nombre del usuario que generó el token. Se puede guardar en el navegador para presentar una web dinámica basada en el usuario activo.
+                  example: usuario123
+                usertype:
+                  type: string
+                  description: Tipo de usuario autenticado, puede ser admin o client.
+                  example: admin
+      400:
+        description: Error del cliente a la hora de mandar los datos.
+      401:
+        description: Credenciales incorrectas.
+      500:
+        description: Error interno del servidor o problema en la consulta SQL.
+
+/register:
+  post:
+    tags:
+      - /api/users
+    description: Ruta de administración la cual permite crear un usuario en base a un username, password y usertype, es usada por un administrador para crear un nuevo usuario que puede ser otro administrador.
+    summary: Ruta para crear nuevos usuarios, puede crear administradores.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+              - usertype
+            properties:
+              username:
+                type: string
+                description: Nombre del usuario, no debe ser mayor a 15 caracteres y no puede estar vacío.
+                example: usuario123
+              password:
+                type: string
+                description: Contraseña de usuario, no puede estar vacío y debe ser menor a 100 caracteres. No tiene requisitos especiales.
+                example: soyunpassword12345
+              usertype:
+                type: string
+                description: Es el tipo de usuario, definirá los privilegios y acceso a rutas de la API, así como debería limitar su acceso a la aplicación. Solo puede ser admin o client.
+                example: admin
+    responses:
+      200:
+        description: La ruta ha funcionado sin errores y un nuevo usuario ha sido creado.
+      400:
+        description: Hubo un error por parte del usuario y se puede volver a mandar la petición para solucionarlo.
+      500:
+        description: Hubo un error interno en el servidor por un error mal manejado o alguna parte de la arquitectura no funciona. Se debe esperar a que se arregle.
+
+/registerClient:
+  post:
+    tags:
+      - /api/users
+    description: Ruta general para dar de alta usuarios cliente.
+    summary: Ruga pública para dar de alta clientes nuevos
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+                description: Nombre de usuario en texto plano, no puede estar vacío y no debe ser mayor de 30 caracteres.
+                example: usuario123
+              password:
+                type: string
+                description: Contraseña de usuario, no puede estar vacío y debe ser menor a 100 caracteres. No tiene requisitos especiales.
+                example: securepassword123
+    responses:
+      200:
+        description: La petición se realizó con éxito y un nuevo recurso se ha creado con los parámetros enviados y el tipo de usuario cliente.
+      400:
+        description: Hubo un error en la petición, generalmente por error en la petición del cliente. Algún dato faltante o con formato equivocado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico donde se explica la causa del fallo.
+      500:
+        description: Hubo un error interno en el servidor. Generalmente con la base de datos o una mala configuración.
+
+/findAll:
+  get:
+    tags:
+      - /api/users
+    description: Ruta protegida solo para administradores. Realiza una consulta de todos los usuarios que existen, útil para construir un menú de administración de usuarios.
+    summary: Ruta restringida que regresa todos los usuarios registrados.
+    responses:
+      200:
+        description: Consulta éxitosa, se regresan los usuarios en una lista.
+
+/update:
+  patch:
+    tags:
+      - /api/users
+    description: Ruta protegida solo para administradores. Recibe obligatoriamente un username para identificar el usuario a actualizar. Puede recibir password y usertype juntos o solo uno de ellos. Se actualizarán los campos mandados, pero se requiere de por lo menos uno de ellos.
+    summary: Solo administradores. Actualiza los datos de un usuario sin pedir credenciales.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+            properties:
+              username:
+                type: string
+                description: Dato obligatorio. Nombre de usuario que se va a actualizar.
+              password:
+                type: string
+                description: Dato opcional. Nueva contraseña de usuario. Debe ser mandada en texto plano o cifrada en una comunicación HTTPS.
+              usertype:
+                type: string
+                description: Dato opcional. Nuevo tipo de usuario. Puede ser admin o client.
+    responses:
+      201:
+        description: El usuario se ha actualizado correctamente con todos los parametros enviados.
+      400:
+        description: Hubo un error con alguno de los parámetros
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico donde se explica la causa del fallo.
+      500:
+        description: Hubo un erorr interno en el servidor. Generalmente relacionado con la base de datos o una mala configuración.
+
+/delete:
+  delete:
+    tags:
+      - /api/users
+    description: Ruta solo para administradores, permite eliminar un usuario en base a su username, no puede eliminar un usuario si no este tiene pedidos registrados a su nombre para preservar la integridad de los datos. Sin pedir credenciales.
+    summary: Solo administradores. Elimina un usuario, pero no si tiene pedidos.
+    requestBody:
+      require: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+            properties:
+              username:
+                type: string
+                description: Nombre de usuario, debe tener entre 0 y 15 caracteres. Debe existir en primer lugar.
+    responses:
+      200:
+        description: El usuario se ha eliminado correctamente
+      400:
+        description: Hubo un error con el parámetro, ya sea un mal formado, no fue mandado o la busqueda no arrojo resultados con ese parametro.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla los motivos del fallo y como solucionarlo.
+      500:
+        description: Ocurrión un error interno en el servidor. Generalmente con la base de datos o una mala configuración.

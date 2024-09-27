@@ -30,7 +30,7 @@ Al usar `npm run dev` se ejecuta el script `nodemon app.js` el cual permite ejec
 
 #### Pendientes
 - Implementar newError en DAO autores para gestion de codigos de salida
-- Implementar newError en DAO usuarios para gestion de codigos de salida
+- ~~***Implementar newError en DAO usuarios para gestion de codigos de salida***~~
 - Implementar newError en DAO categorias para gestion de codigos de salida
 - Aplicar inserts en DAO prestamos: newLoan
 - DAO para prestamos
