@@ -18,10 +18,11 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
     }
 });
 // Ruta protegida para generar una nueva categoría
-router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.post('/register/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
-        const {id, descr} = req.body;
+        const id = req.params.id;
+        const {descr} = req.body;
         await categoryDAO.register(id, descr);
         return res.status(200).json({message: 'Categoria creado correctamente'});
     } catch (error) {
@@ -35,10 +36,11 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
     }
 });
 // Ruta protegida para actualizar una categoria
-router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
-        const {id, descr} = req.body;
+        const id = req.params.id;
+        const {descr} = req.body;
         await categoryDAO.update(id, descr);
         return res.status(201).json({message: 'Categoria fue actualizada correctamente'});
     }catch(error) {
@@ -52,10 +54,10 @@ router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req
     }
 });
 // Ruta protegida para eliminar una categoría
-router.delete('/delete', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.delete('/delete/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
-        const {id} = req.body;
+        const id = req.params.id;
         await categoryDAO.delete(id);
         return res.status(200).json({message: 'Categoria eliminada'});
     }catch(error) {
