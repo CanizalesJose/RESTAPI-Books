@@ -6,7 +6,7 @@ const db = require('../connection/db');
 class bookDAO {
     // Regresa un registro en base al id
     static async find(id){
-        const mainSqlQuery = 'SELECT id, title, isbn, author, publisher, publishYear, category, copies, imageUrl FROM Books WHERE id = ?';
+        const mainSqlQuery = 'SELECT id, title, isbn, author, publisher, publishYear, category, imageUrl FROM Books WHERE id = ?';
         try {
             if (!id){
                 throw newError(400, "Falta el parametro id");
@@ -14,7 +14,7 @@ class bookDAO {
             if (id.length == 0 || id.length > 15){
                 throw newError(400, "El parametro id no cumple los requisitos de dato");
             }
-            const result = db.query(mainSqlQuery, [id]);
+            const result = await db.query(mainSqlQuery, [id]);
             if (!result){
                 throw newError(500, "Error interno en consulta");
             }
@@ -25,9 +25,9 @@ class bookDAO {
     }
     // Regresa todos los libros registrados
     static async findAll(){
-        const mainSqlQuery = 'SELECT id, title, isbn, author, publisher, publishYear, category, copies, imageUrl FROM Books';
+        const mainSqlQuery = 'SELECT books.id as id, title, isbn, author, fullname, publisher, publishYear, category, descr, imageUrl FROM Books INNER JOIN authors ON books.author=authors.id INNER JOIN categories ON books.category=categories.id';
         try {
-            const result = db.query(mainSqlQuery);
+            const result = await db.query(mainSqlQuery);
             if (!result)
                 throw newError(500, "Error interno en consulta");
             return result;
@@ -36,9 +36,9 @@ class bookDAO {
         }
     }
     // Registrar un nuevo libro
-    static async register(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl){
-        const sqlQuery1 = 'INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, copies, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-        const sqlQuery2 = 'INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, copies) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    static async register(id, title, isbn, author, publisher, publishYear, category, imageUrl){
+        const sqlQuery1 = 'INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        const sqlQuery2 = 'INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category) VALUES (?, ?, ?, ?, ?, ?, ?)'
         try {
             // Comprobar que existan los parametros
             if (!id)
@@ -55,8 +55,6 @@ class bookDAO {
                 throw newError(400, "Falta el parametro publishYear");
             if (!category)
                 throw newError(400, "Falta el parametro category");
-            if (!copies)
-                throw newError(400, "Falta el parametro copies");
             var includeImage = false;
             if (imageUrl)
                 includeImage = true;
@@ -75,13 +73,8 @@ class bookDAO {
                 throw newError(400, "El parametro publishYear no es un número");
             if (category.length == 0 || category.length > 15)
                 throw newError(400, "El parametro category no cumple los requisitos de dato");
-            if (isNaN(parseInt(copies)))
-                throw newError(400, "El parametro copies no es un número");
             // Convertir en ints
             publishYear = parseInt(publishYear);
-            copies = parseInt(copies);
-            if (copies < 0)
-                throw newError(400, "El parametro copies no puede ser menor a 0");
             if (publishYear < 0)
                 throw newError(400, "El parametro publishYear no puede ser menor a 0");
             // Comprobaciones de relaciones
@@ -102,17 +95,17 @@ class bookDAO {
             if (includeImage){
                 if (imageUrl.length > 255)
                     throw newError(400, "El parametro imageUrl no puede tener mas de 255 caracteres");
-                await db.query(sqlQuery1, [id, title, isbn, author, publisher, publishYear, category, copies, imageUrl]);
+                await db.query(sqlQuery1, [id, title, isbn, author, publisher, publishYear, category, imageUrl]);
             }
             if (!includeImage)
-                await db.query(sqlQuery2, [id, title, isbn, author, publisher, publishYear, category, copies])
+                await db.query(sqlQuery2, [id, title, isbn, author, publisher, publishYear, category])
         } catch (error) {
             throw error;
         }
     }
     // Actualizar un registro
-    static async update(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl){
-        const sqlQuery = 'UPDATE Books SET title = ?, isbn = ?, author = ?, publisher = ?, publishYear = ?, category = ?, copies = ?, imageUrl = ? WHERE id = ?';
+    static async update(id, title, isbn, author, publisher, publishYear, category, imageUrl){
+        const sqlQuery = 'UPDATE Books SET title = ?, isbn = ?, author = ?, publisher = ?, publishYear = ?, category = ?, imageUrl = ? WHERE id = ?';
         try {
             // Comprobar que existan los parametros
             if (!id)
@@ -129,8 +122,6 @@ class bookDAO {
                 throw newError(400, "Falta el parametro publishYear");
             if (!category)
                 throw newError(400, "Falta el parametro category");
-            if (!copies)
-                throw newError(400, "Falta el parametro copies");
             if (!imageUrl)
                 throw newError(400, "Falta el parametro imageUrl");
             // Comprobar requisitos de datos
@@ -151,11 +142,6 @@ class bookDAO {
                 throw newError(400, "El parametro publishYear no puede ser menor a 0");
             if (category.length == 0 || category.length > 15)
                 throw newError(400, "El parametro category no cumple los requisitos de dato");
-            if (isNaN(parseInt(copies)))
-                throw newError(400, "El parametro copies no es un número");
-            copies = parseInt(copies);
-            if (copies < 0)
-                throw newError(400, "El parametro copies no puede ser menor a 0");
             if (imageUrl.length > 255)
                 throw newError(400, "El parametro imageUrl no puede tener mas de 255 caracteres");
             // Comprobar si existen las llaves foraneas (author, category)
@@ -172,7 +158,7 @@ class bookDAO {
                 throw newError(500, "Error en la consulta");
             if (result.length == 0)
                 throw newError(400, "El registro no existe");
-            await db.query(sqlQuery, [title, isbn, author, publisher, publishYear, category, copies, imageUrl, id]);
+            await db.query(sqlQuery, [title, isbn, author, publisher, publishYear, category, imageUrl, id]);
         } catch (error) {
             throw error;
         }

@@ -36,8 +36,8 @@ router.get('/findAll', async (req, res) => {
 router.post('/register', async (req, res) => {
     printPath(req.path, req.method);
     try{
-        const {id, title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
-        await bookDAO.register(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl);
+        const {id, title, isbn, author, publisher, publishYear, category, imageUrl} = req.body;
+        await bookDAO.register(id, title, isbn, author, publisher, publishYear, category, imageUrl);
         return res.status(201).json({message: "Libro registrado correctamente"});
     } catch (error) {
         if (error.sqlState)
@@ -50,8 +50,8 @@ router.post('/register', async (req, res) => {
 router.patch('/update', async (req, res) => {
     printPath(req.path, req.method);
     try{
-        const {id, title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
-        await bookDAO.update(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl);
+        const {id, title, isbn, author, publisher, publishYear, category, imageUrl} = req.body;
+        await bookDAO.update(id, title, isbn, author, publisher, publishYear, category, imageUrl);
         return res.status(200).json({message: "Libro actualizado"});
     } catch (error) {
         if (error.sqlState){
