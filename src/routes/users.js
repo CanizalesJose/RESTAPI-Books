@@ -2,7 +2,7 @@ const router = require('express').Router();
 const userDAO = require('../models/userDAO');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { authenticateToken, authorizeRoles, printPath } = require('../utils');
+const { authenticateToken, authorizeRoles, printPath, newError } = require('../utils');
 
 // Recibe en el body un username y password, regresa 201 y el token generado si el usuario existe
 router.post('/login/:username', async (req, res) => {
@@ -95,6 +95,8 @@ router.patch('/update/:username', authenticateToken, authorizeRoles(['admin']), 
     try {
         const username = req.params.username;
         const {password, usertype, contactNumber, email} = req.body;
+        if (req.user.username == username)
+            throw newError(400, 'No se puede actualizar al usuario activo');
         await userDAO.updateUser(username, password, usertype, contactNumber, email);
         return res.status(201).json({message: `Usuario actualizado correctamente`});
     } catch (error) {
@@ -112,6 +114,8 @@ router.patch('/update/:username', authenticateToken, authorizeRoles(['admin']), 
     printPath(req.path, req.method);
     try {
         const username = req.params.username;
+        if (req.user.username == username)
+            throw newError(400, 'No se puede eliminar al usuario activo')
         await userDAO.deleteUser(username);
         return res.status(200).json({message: 'Registro eliminado'});
     } catch (error) {

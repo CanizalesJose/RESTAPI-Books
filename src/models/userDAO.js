@@ -61,7 +61,6 @@ class userDAO {
                 throw newError(400, "El usuario ya existe");
             // Los datos son correctos, se encripta la contraseña
             password = encryptText(password);
-            console.log(password);
             await db.query(mainSqlQuery, [username, password, usertype, contactNumber, email]);
         } catch (error){
             throw error;
@@ -71,7 +70,7 @@ class userDAO {
         const sqlQuery1 = 'UPDATE Users SET userpassword = ?, usertype = ?, contactNumber = ?, email = ? WHERE username = ?';
         const sqlQuery2 = 'UPDATE Users SET usertype = ?, contactNumber = ?, email = ? WHERE username = ?'
         try {
-            const changePassword = false;
+            var changePassword = false;
             // Revisar parametro username
             if (!username)
                 throw newError(400, "Falta el parametro username");
