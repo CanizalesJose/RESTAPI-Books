@@ -5,17 +5,18 @@ const bcrypt = require('bcrypt');
 const { authenticateToken, authorizeRoles, printPath } = require('../utils');
 
 // Recibe en el body un username y password, regresa 201 y el token generado si el usuario existe
-router.post('/login', async (req, res) => {
+router.post('/login/:username', async (req, res) => {
     printPath(req.path, req.method);
     try {
-        const {username, password} = req.body;
+        const username = req.params.username;
+        const {password} = req.body;
         if (!username || !password)
             throw new Error("Faltan credenciales");
         const user = await userDAO.findUser(username);
         if (!user || user.length == 0 || !bcrypt.compareSync(password, user[0]['userpassword'])){
             return res.status(401).json({message: 'Credenciales inválidas'});
         }
-        const token = jwt.sign({username: user[0]['username'], usertype: user[0]['usertype']}, process.env.SECRET_KEY, {expiresIn: '5m'});
+        const token = jwt.sign({username: user[0]['username'], usertype: user[0]['usertype']}, process.env.SECRET_KEY, {expiresIn: '4h'});
         return res.status(201).json({token: token, username: user[0]['username'], usertype: user[0]['usertype']});
     } catch (error) {
         if (error.sqlState){
@@ -28,21 +29,22 @@ router.post('/login', async (req, res) => {
     }
 });
 // Confirma que un token siga en funcionamiento
-router.post('/validToken', authenticateToken, async (req, res) => {
+router.get('/validToken', authenticateToken, async (req, res) => {
     printPath(req.path, req.method);
-    try {
-        return res.status(200).json(req.user);
-    } catch (error) {
-        return res.status(400).json({clearToken: true});
-    }
+    return res.status(200).json(req.user);
+});
+router.get('/validAdmin', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    printPath(req.path, req.method);
+    return res.sendStatus(200);
 });
 // Recibe en el body un usuario y contraseña en texto plano
-router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.post('/register/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
-        const {username, password, usertype} = req.body;
-        await userDAO.registerUser(username, password, usertype);
-        return res.status(200).json({message: 'El usuario se ha registrado'});
+        const username = req.params.username;
+        const {password, usertype, contactNumber, email} = req.body;
+        await userDAO.registerUser(username, password, usertype, contactNumber, email);
+        return res.status(201).json({message: 'El usuario se ha registrado'});
     } catch (error) {
         if (error.sqlState){
             if (error.errno == 1451)
@@ -54,11 +56,12 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
     }
 });
 // Ruta pública para que los clientes se registren a si mismos
-router.post('/registerClient', async (req, res) => {
+router.post('/registerClient/:username', async (req, res) => {
     printPath(req.path, req.method);
     try {
-        const {username, password} = req.body;
-        await userDAO.registerUser(username, password, 'client');
+        const username = req.params.username;
+        const {password, contactNumber, email} = req.body;
+        await userDAO.registerUser(username, password, 'client', contactNumber, email);
         return res.status(200).json({message: 'Registrado correctamente'});
     } catch (error) {
         if (error.sqlState){
@@ -87,11 +90,12 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
     }
 });
 // Ruta protegida para modificar usuarios
-router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req, res) =>{
+router.patch('/update/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) =>{
     printPath(req.path, req.method);
     try {
-        const {username, password, usertype} = req.body;
-        await userDAO.updateUser(username, password, usertype);
+        const username = req.params.username;
+        const {password, usertype, contactNumber, email} = req.body;
+        await userDAO.updateUser(username, password, usertype, contactNumber, email);
         return res.status(201).json({message: `Usuario actualizado correctamente`});
     } catch (error) {
         if (error.sqlState){
@@ -104,10 +108,10 @@ router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req
     }
 });
 // Ruta protegida para eliminar usuarios
-    router.delete('/delete', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    router.delete('/delete/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
-        const {username} = req.body;
+        const username = req.params.username;
         await userDAO.deleteUser(username);
         return res.status(200).json({message: 'Registro eliminado'});
     } catch (error) {

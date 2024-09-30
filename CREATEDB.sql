@@ -32,7 +32,9 @@ CREATE TABLE Books(
 CREATE TABLE Users(
     userName VARCHAR(30) PRIMARY KEY,
     userPassword VARCHAR(100),
-    usertype VARCHAR(15)
+    usertype VARCHAR(15),
+    contactNumber VARCHAR(12),
+    email VARCHAR(100)
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 CREATE TABLE Loans(
@@ -53,9 +55,9 @@ CREATE TABLE LoanDetails(
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 
-INSERT INTO Users(userName, userPassword, usertype) VALUES 
-('canizales', '$2a$10$gg0gsMs9mqq3w061FuN7HuJjyumVgwQtsiXBtg/.IpFwqXixRQvcK', 'admin'),
-('usuario', '$2a$10$gg0gsMs9mqq3w061FuN7HuJjyumVgwQtsiXBtg/.IpFwqXixRQvcK', 'client');
+INSERT INTO Users(userName, userPassword, usertype, contactNumber, email) VALUES 
+('canizales', '$2a$10$gg0gsMs9mqq3w061FuN7HuJjyumVgwQtsiXBtg/.IpFwqXixRQvcK', 'admin', '686-123-1234', 'admin@email.com'),
+('usuario', '$2a$10$gg0gsMs9mqq3w061FuN7HuJjyumVgwQtsiXBtg/.IpFwqXixRQvcK', 'client', '686-321-4321', 'client@email.com');
 
 
 INSERT INTO Authors (id, fullName, nationality) VALUES

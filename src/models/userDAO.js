@@ -3,7 +3,7 @@ const {encryptText, newError} = require('../utils');
 
 class userDAO {
     static async findAllUsers(){
-        const sqlQuery = 'SELECT username, usertype FROM Users';
+        const sqlQuery = 'SELECT username, usertype, contactNumber, email FROM Users';
         try {
             const results = await db.query(sqlQuery);
             if (!results)
@@ -15,7 +15,7 @@ class userDAO {
     }
     // Regresa un arreglo de diccionarios si encuentra un usuario en base a un nombre
     static async findUser(username){
-        const sqlQuery = 'SELECT username, userpassword, usertype FROM Users WHERE username = ?;'
+        const sqlQuery = 'SELECT username, userpassword, usertype, contactNumber, email FROM Users WHERE username = ?;'
         try {
             if (!username)
                 throw newError(400, "Falta parametro username");
@@ -30,23 +30,29 @@ class userDAO {
         }
     }
     // Registra un usuario, regresa error si no puede
-    static async registerUser(username, password, usertype){
-        const mainSqlQuery = 'INSERT Users(username, userpassword, usertype) VALUES (?, ?, ?)';
+    static async registerUser(username, password, usertype, contactNumber, email){
+        const mainSqlQuery = 'INSERT Users(username, userpassword, usertype, contactNumber, email) VALUES (?, ?, ?, ?, ?)';
         try{
-            if (!username && !password)
-                throw newError(400, 'Faltan los parametros username y password');
             if (!username)
                 throw newError(400, 'Falta el parametro username');
             if (!password)
                 throw newError(400, 'Falta el parametro password');
             if (!usertype)
                 throw newError(400, 'Falta el parametro usertype');
+            if (!contactNumber)
+                throw newError(400, 'Falta el parametro contactNumber');
+            if (!email)
+                throw newError(400, 'Falta el parametro email');
             if (username.length == 0 || username.length > 30)
                 throw newError(400, 'El parametro username no cumple los requisitos de dato');
             if (password.length == 0 || password.length > 100)
                 throw newError(400, 'El parametro password no cumple los requisitos de dato');
             if (usertype.length == 0 || usertype.length > 15)
                 throw newError(400, 'El parametro usertype no cumple los requisitos de dato');
+            if (contactNumber.length == 0 || contactNumber.length > 12)
+                throw newError(400, 'El parametro contactNumber no cumple los requisitos de dato');
+            if (email.length == 0 || email.length > 100)
+                throw newError(400, 'El parametro email no cumple los requisitos de dato');
             // Comprobar si ya existe
             const result = await this.findUser(username);
             if (!result)
@@ -56,45 +62,41 @@ class userDAO {
             // Los datos son correctos, se encripta la contraseña
             password = encryptText(password);
             console.log(password);
-            await db.query(mainSqlQuery, [username, password, usertype]);
-            return 0;
+            await db.query(mainSqlQuery, [username, password, usertype, contactNumber, email]);
         } catch (error){
             throw error;
         }
     }
-    static async updateUser(username, newPassword, newUsertype){
-        const sqlQuery1 = 'UPDATE Users SET userpassword = ? WHERE username = ?';
-        const sqlQuery2 = 'UPDATE Users SET usertype = ? WHERE username = ?';
+    static async updateUser(username, newPassword, newUsertype, newContactNumber, newEmail){
+        const sqlQuery1 = 'UPDATE Users SET userpassword = ?, usertype = ?, contactNumber = ?, email = ? WHERE username = ?';
+        const sqlQuery2 = 'UPDATE Users SET usertype = ?, contactNumber = ?, email = ? WHERE username = ?'
         try {
+            const changePassword = false;
             // Revisar parametro username
             if (!username)
                 throw newError(400, "Falta el parametro username");
-            var changePassword = false;
-            var changeUsertype = false;
             if (newPassword){
                 if (newPassword.length == 0 || newPassword.length > 100)
-                    throw newError(400, "El parametro password no cumple los requisitos de dato");
+                    throw newError(400, 'La contraseña no cumple los requisitos de dato');
                 changePassword = true;
-            }
-            if (newUsertype){
-                if (newUsertype.length == 0 || newUsertype.length > 15)
-                    throw newError(400, "El parametro usertype no cumple los requisitos de dato");
-                changeUsertype = true;
-            }
-            if (changePassword == false && changeUsertype == false)
-                throw newError(400, "Falta el parametro password o usertype");
-            const result = await this.findUser(username);
-            if (!result)
-                throw newError(500, "Error en la consulta");
-            if (result.length == 0)
-                throw newError(400, "El registro no existe");
-            // Aplicar update
-            if (changePassword){
                 newPassword = encryptText(newPassword);
-                await db.query(sqlQuery1, [newPassword, username]);
             }
-            if (changeUsertype)
-                await db.query(sqlQuery2, [newUsertype, username]);
+            if (!newUsertype)
+                throw newError(400, 'Falta el parametro usertype');
+            if (newUsertype.length == 0 || newUsertype.length > 15)
+                throw newError(400, 'El tipo de usuario no cumple los requisitos de dato');
+            if (!newContactNumber)
+                throw newError(400, 'Falta el parametro contactNumber');
+            if (newContactNumber.length == 0 || newContactNumber.length > 12)
+                throw newError(400, 'El numero de contacto no cumple los requisitos de dato');
+            if (!newEmail)
+                throw newError(400, 'Falta el parametro email');
+            if (newEmail.length == 0 || newEmail.length > 100)
+                throw newError(400, 'El correo no cumple los requisitos de dato');
+            if (changePassword)
+                await db.query(sqlQuery1, [newPassword, newUsertype, newContactNumber, newEmail, username]);
+            if (!changePassword)
+                await db.query(sqlQuery2, [newUsertype, newContactNumber, newEmail, username]);
         } catch (error) {
             throw error;
         }
