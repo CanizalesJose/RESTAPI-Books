@@ -34,8 +34,12 @@ class authorModel{
     static async register(newId=null, newFullname=null, newNationality=null){
         const mainSqlQuery = 'INSERT Authors(id, fullname, nationality) VALUES (?, ?, ?)';
         try {
-            if (!newId || !newFullname || !newNationality)
-                throw newError(400, "Faltan parametros");
+            if (!newId)
+                throw newError(400, "Faltan el parametro newId");
+            if (!newFullname)
+                throw newError(400, "Falta el parametro newFullname");
+            if (!newNationality)
+                throw newError(400, "Falta el parametro newNationality");
             if (newId.length == 0 || newId.length > 15)
                 throw newError(400, "El Id no cumple los requisitos de dato");
             if (newFullname.length == 0 || newFullname.length > 100)
@@ -55,43 +59,32 @@ class authorModel{
     }
     // Actualiza un dato de un autor en base a los datos enviados, lanza error si falla
     static async update(id=undefined, newFullname=undefined, newNationality=undefined){
-        const nameSqlQuery = 'UPDATE Authors SET fullname = ? WHERE id =?';
-        const nationalitySqlQuery = 'UPDATE Authors SET nationality = ? WHERE id = ?';
+        const sqlQuery = 'UPDATE Authors SET fullname = ?, nationality = ? WHERE id =?';
         try {
-            var changeName = false; 
-            var changeNation = false;
             // Comprobar id
             if (!id)
                 throw newError(400, "Falta el parametro id");
             if (id.length == 0 || id.length > 15)
                 throw newError(400, "El id no cumple con los requisitos de dato");
+            if (!newFullname && !newNationality)
+                throw newError(400, "Faltan los parametros newFullname y newNationality");
             // Comprobar nombre
-            if (newFullname){
-                if (newFullname.length == 0 || newFullname.length > 100)
-                    throw newError(400, "El nombre no cumple con los requisitos de dato");
-                changeName = true;
-            }
+            if (!newFullname)
+                throw newError(400, "Falta el parametro newFullname");
+            if (newFullname.length == 0 || newFullname.length > 100)
+                throw newError(400, "El nombre no cumple con los requisitos de dato");
             // Comprobar nacionalidad
-            if (newNationality){
-                if (newNationality.length == 0 || newNationality.length > 50)
-                    throw newError(400, "La nacionalidad no cumple con los requisitos de dato");
-                changeNation = true;
-            }
-            // Comprobra que al menos un parametro se haya enviado
-            if (changeName == false && changeNation == false)
-                throw newError(400, "Al menos el nombre o la nacionalidad se debe mandar como parametro");
+            if (!newNationality)
+                throw newError(400, "Falta el parametro newNationality");
+            if (newNationality.length == 0 || newNationality.length > 50)
+                throw newError(400, "La nacionalidad no cumple con los requisitos de dato");
             // Revisar si existe el registro a actualizar
             const result = this.find(id);
             if (!result)
                 throw newError(500, "Error en la consulta");
             if (result.length == 0)
                 throw newError(400, "El registro no existe");
-            // Si no fallos en parametros y el registro existe, entonces actualiza
-            if (changeName == true)
-                await db.query(nameSqlQuery, [newFullname, id]);
-            if (changeNation == true)
-                await db.query(nationalitySqlQuery, [newNationality, id]);
-            return 0;
+            await db.query(sqlQuery, [newFullname, newNationality, id]);
         } catch (error) {
             throw error;
         }

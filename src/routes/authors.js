@@ -35,9 +35,10 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
     }
 });
 // Ruta protegida para registrar un nuevo autor
-router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.post('/register/:newId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
-    const {newId, newFullname, newNationality} = req.body;
+    const newId = req.params.newId;
+    const {newFullname, newNationality} = req.body;
     try {
         await authorDAO.register(newId, newFullname, newNationality);
         return res.status(200).json({message: 'Autor registrado'});
@@ -52,9 +53,10 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
     }
 });
 // Ruta para actualizar un registro
-router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
-    const {id, newFullname, newNationality} = req.body;
+    const id = req.params.id;
+    const {newFullname, newNationality} = req.body;
     try {
         await authorDAO.update(id, newFullname, newNationality);
         return res.status(200).json({message: 'Autor actualizado'});
@@ -69,9 +71,9 @@ router.patch('/update', authenticateToken, authorizeRoles(['admin']), async (req
     }
 });
 // Ruta para eliminar un registro
-router.delete('/delete'/* , authenticateToken, authorizeRoles(['admin']) */, async (req, res) => {
+router.delete('/delete/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
-    const {id} = req.body;
+    const id = req.params.id;
     try {
         await authorDAO.delete(id);
         return res.status(200).json({message: 'Autor eliminado'});
