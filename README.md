@@ -29,9 +29,6 @@ En caso de ejecutar el servidor para ponerlo a prueba se puede usar el primero. 
 Al usar `npm run dev` se ejecuta el script `nodemon app.js` el cual permite ejecutar un entorno de desarrollo que vuelve a ejecutar el servicio al detectar un cambio en algun archivo.
 
 #### Pendientes
-- Implementar newError en DAO autores para gestion de codigos de salida
-- ~~***Implementar newError en DAO usuarios para gestion de codigos de salida***~~
-- Implementar newError en DAO categorias para gestion de codigos de salida
 - Aplicar inserts en DAO prestamos: newLoan
 - DAO para prestamos
 - Endpoints de prestamos

@@ -1,11 +1,11 @@
 tags:
-  - name: /api/users
+  - name: Usuarios
     description: Rutas relacionadas con el proceso de login, autenticación y gestión de usuarios.
 
-/login:
+/api/users/login:
   post:
     tags:
-      - /api/users
+      - Usuarios
     description: Recibe credenciales de usuario y genera un token temporal.
     summary: Autentica al usuario y genera un JWT.
     requestBody:
@@ -51,12 +51,74 @@ tags:
       500:
         description: Error interno del servidor o problema en la consulta SQL.
 
-/register:
+/api/users/validToken:
   post:
     tags:
-      - /api/users
+      - Usuarios
+    description: Ruta auxiliar para verificar si un token sigue vigente o debe ser eliminado de la memoria del cliente.
+    summary: Ruta para verificar token.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
+    responses:
+      200:
+        description: El token es valido y sigue vigente para su uso en las rutas protegidas de la API
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nombre del usuario que generó el token en primer lugar
+                usertype:
+                  type: string
+                  descripcion: Tipo de usuario que generó el token en primer lugar. Limita el acceso a ciertas rutas. Puede ser admin o client.
+                iat:
+                  type: integer
+                  description: Unix timestamp del momento en que fue generado el token.
+                exp:
+                  type: integer
+                  description: Unix timestamp del momento en que expirará el token.
+      401:
+        description: El token no se encuentra en la petición, por lo que se rechazará su validez y se aconseja limpiar la memoria donde se almacene.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clearToken:
+                  type: boolean
+                  description: Recomendación de limpiar el token del cliente.
+      403:
+        description: El token enviado fue rechazado por el servidor y se recomienda su eliminación.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clearToken:
+                  type: boolean
+                  description: Recomendación de limpiar el token del cliente.
+
+
+/api/users/register:
+  post:
+    tags:
+      - Usuarios
     description: Ruta de administración la cual permite crear un usuario en base a un username, password y usertype, es usada por un administrador para crear un nuevo usuario que puede ser otro administrador.
-    summary: Ruta para crear nuevos usuarios, puede crear administradores.
+    summary: Ruta para crear nuevos usuarios, puede crear administradores
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
     requestBody:
       required: true
       content:
@@ -81,17 +143,17 @@ tags:
                 description: Es el tipo de usuario, definirá los privilegios y acceso a rutas de la API, así como debería limitar su acceso a la aplicación. Solo puede ser admin o client.
                 example: admin
     responses:
-      200:
+      201:
         description: La ruta ha funcionado sin errores y un nuevo usuario ha sido creado.
       400:
         description: Hubo un error por parte del usuario y se puede volver a mandar la petición para solucionarlo.
       500:
         description: Hubo un error interno en el servidor por un error mal manejado o alguna parte de la arquitectura no funciona. Se debe esperar a que se arregle.
 
-/registerClient:
+/api/users/registerClient:
   post:
     tags:
-      - /api/users
+      - Usuarios
     description: Ruta general para dar de alta usuarios cliente.
     summary: Ruga pública para dar de alta clientes nuevos
     requestBody:
@@ -128,22 +190,49 @@ tags:
       500:
         description: Hubo un error interno en el servidor. Generalmente con la base de datos o una mala configuración.
 
-/findAll:
+/api/users/findAll:
   get:
     tags:
-      - /api/users
+      - Usuarios
     description: Ruta protegida solo para administradores. Realiza una consulta de todos los usuarios que existen, útil para construir un menú de administración de usuarios.
     summary: Ruta restringida que regresa todos los usuarios registrados.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
     responses:
       200:
         description: Consulta éxitosa, se regresan los usuarios en una lista.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nombre de usuario que lo identifica
+                usertype:
+                  type: string
+                  description: Tipo de usuario y el alcance de sus privilegios
+      500:
+        description: Hubo un error interno en el servidor. Generalmente con la base de datos o una mala configuración.
 
-/update:
+/api/users/update:
   patch:
     tags:
-      - /api/users
+      - Usuarios
     description: Ruta protegida solo para administradores. Recibe obligatoriamente un username para identificar el usuario a actualizar. Puede recibir password y usertype juntos o solo uno de ellos. Se actualizarán los campos mandados, pero se requiere de por lo menos uno de ellos.
     summary: Solo administradores. Actualiza los datos de un usuario sin pedir credenciales.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
     requestBody:
       required: true
       content:
@@ -178,12 +267,19 @@ tags:
       500:
         description: Hubo un erorr interno en el servidor. Generalmente relacionado con la base de datos o una mala configuración.
 
-/delete:
+/api/users/delete:
   delete:
     tags:
-      - /api/users
+      - Usuarios
     description: Ruta solo para administradores, permite eliminar un usuario en base a su username, no puede eliminar un usuario si no este tiene pedidos registrados a su nombre para preservar la integridad de los datos. Sin pedir credenciales.
     summary: Solo administradores. Elimina un usuario, pero no si tiene pedidos.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
     requestBody:
       require: true
       content:
