@@ -23,6 +23,23 @@ class bookDAO {
             throw error;
         }
     }
+    // Regresa los libros que tengan en alguna parte del titulo un string
+    static async findTitle(title){
+        const sqlQuery = 'SELECT books.id as id, title, isbn, author, fullname, publisher, publishYear, category, descr, imageUrl FROM Books INNER JOIN authors ON books.author=authors.id INNER JOIN categories ON books.category=categories.id WHERE title LIKE ?';
+        try {
+            if (!title)
+                throw newError(400, 'Falta el parametro title');
+            title = `%${title}%`
+            const result = await db.query(sqlQuery, [title])
+            .catch(error => {
+                throw newError(500, 'Error en la consulta');
+            });
+            return result;
+        } catch (error) {
+            throw error;
+        }
+        
+    }
     // Regresa todos los libros registrados
     static async findAll(){
         const mainSqlQuery = 'SELECT books.id as id, title, isbn, author, fullname, publisher, publishYear, category, descr, imageUrl FROM Books INNER JOIN authors ON books.author=authors.id INNER JOIN categories ON books.category=categories.id';

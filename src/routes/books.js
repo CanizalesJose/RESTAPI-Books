@@ -3,13 +3,14 @@ const db = require('../connection/db');
 const bookDAO = require('../models/bookDAO');
 const {authenticateToken, authorizeRoles, printPath} = require('../utils');
 
-router.get('/find', async (req, res) => {
+router.get('/findTitle/:title', async (req, res) => {
     printPath(req.path, req.method);
     try {
-        const {id} = req.body;
-        const result = await bookDAO.find(id);
-        return res.status(200).json(result);
+        const title = req.params.title;
+        const results = await bookDAO.findTitle(title);
+        return res.status(200).json(results);
     } catch (error) {
+        console.log(error);
         if (error.sqlState){
             if (error.errno == 1451)
                 return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
