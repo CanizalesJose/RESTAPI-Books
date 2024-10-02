@@ -1,6 +1,6 @@
 const categoryDAO = require('./categoryDAO');
 const authorDAO = require('./authorDAO');
-const {newError} = require('../utils');
+const {newError, genId} = require('../utils');
 const db = require('../connection/db');
 
 class bookDAO {
@@ -53,13 +53,11 @@ class bookDAO {
         }
     }
     // Registrar un nuevo libro
-    static async register(id, title, isbn, author, publisher, publishYear, category, imageUrl){
+    static async register(title, isbn, author, publisher, publishYear, category, imageUrl){
         const sqlQuery1 = 'INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
         const sqlQuery2 = 'INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category) VALUES (?, ?, ?, ?, ?, ?, ?)'
         try {
             // Comprobar que existan los parametros
-            if (!id)
-                throw newError(400, "Falta el parametro id");
             if (!title)
                 throw newError(400, "Falta el parametro title");
             if (!isbn)
@@ -76,8 +74,6 @@ class bookDAO {
             if (imageUrl)
                 includeImage = true;
             // Comprobar requisitos de datos
-            if (id.length == 0 || id.length > 15)
-                throw newError(400, "El parametro id no cumple los requisitos de dato");
             if (title.length == 0 || title.length > 100)
                 throw newError(400, "El parametro title no cumple los requisitos de dato");
             if (isbn.length == 0 || isbn.length > 18)
@@ -103,11 +99,16 @@ class bookDAO {
             result = await categoryDAO.find(category);
             if (!result)
                 throw newError(400, "La categoria no existe");
-            result = await this.find(id);
-            if (!result)
-                throw newError(500, "Error en la consulta");
-            if (result.length > 0)
-                throw newError(400, "El registro ya existe");
+            let pass = false;
+            let id = '';
+            do {
+                id = genId(15);                
+                result = await this.find(id);
+                if (!result)
+                    throw newError(500, 'Error interno en la consulta')
+                if (result.length == 0)
+                    pass = true;
+            } while (!pass);
             // Ejecutar consultas
             if (includeImage){
                 if (imageUrl.length > 255)
@@ -116,6 +117,8 @@ class bookDAO {
             }
             if (!includeImage)
                 await db.query(sqlQuery2, [id, title, isbn, author, publisher, publishYear, category])
+            const newBook = await this.find(id);
+            return newBook[0];
         } catch (error) {
             throw error;
         }

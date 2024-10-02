@@ -2,7 +2,7 @@ const router = require('express').Router();
 const categoryDAO = require('../models/categoryDAO');
 const { authenticateToken, authorizeRoles, printPath } = require('../utils');
 // Ruta protegida que regresa todas las categorias registradas, regresa [] si no encuentra nada o hay error en la consulta
-router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/find/All', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
         const categories = await categoryDAO.findAll();

@@ -6,11 +6,11 @@ const authenticateToken = (req, res, next) => {
     const token = req.headers['token'];
 
     // Si no se ingresa un token, regresa estado de error
-    if (!token) return res.sendStatus(401);
+    if (!token) return res.status(401).json({message: 'Falta token de autenticación'});
 
     jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
         // Si el token no es valido, regresa un estado de error
-        if (err) return res.sendStatus(401);
+        if (err) return res.status(401).json({message: 'Token rechazado'});
         // Si no se genera el error, entonces guarda los datos del usuario que generó el token en la variable de la request
         req.user = user;
         // Pasa al siguiente middleware, probablemente la función del endpoint o authorizeRoles
@@ -23,7 +23,7 @@ const authorizeRoles = (roles) => {
         const user = req.user;
         if (!roles.includes(user['usertype'])){
             // Si se encuentra autenticado, pero no tiene privilegios, regresa un estado de error distinto
-            return res.status(403).json({clearToken: false});
+            return res.status(403).json({message: 'Permisos insuficientes'});
         }
         next();
     }
@@ -46,12 +46,14 @@ const newError = (statusCode, message) => {
 }
 
 const genId = (length) => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
+    const randomLength = Math.floor(Math.random() * length) + 1;
 
-    for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random()*chars.length));
+    for (let i = 0; i < randomLength; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+
     return result;
 }
 module.exports = {
