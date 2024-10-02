@@ -35,13 +35,15 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
     }
 });
 // Ruta protegida para registrar un nuevo autor
-router.post('/register/:newId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
-    const newId = req.params.newId;
     const {newFullname, newNationality} = req.body;
     try {
-        await authorDAO.register(newId, newFullname, newNationality);
-        return res.status(200).json({message: 'Autor registrado'});
+        let newAuthor = await authorDAO.register(newFullname, newNationality);
+        return res.status(200).json({
+            message: 'Autor registrado',
+            author: newAuthor
+        });
     } catch (error) {
         if (error.sqlState){
             if (error.errno == 1451)

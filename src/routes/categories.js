@@ -18,13 +18,15 @@ router.get('/find/All', authenticateToken, authorizeRoles(['admin']), async (req
     }
 });
 // Ruta protegida para generar una nueva categoría
-router.post('/register/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
-        const id = req.params.id;
         const {descr} = req.body;
-        await categoryDAO.register(id, descr);
-        return res.status(200).json({message: 'Categoria creado correctamente'});
+        let newCategory = await categoryDAO.register(descr);
+        return res.status(200).json({
+            message: 'Categoria creado correctamente',
+            category: newCategory
+        });
     } catch (error) {
         if (error.sqlState){
             if (error.errno == 1451)

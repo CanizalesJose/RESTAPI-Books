@@ -1,5 +1,5 @@
 const db = require('../connection/db');
-const {newError} = require('../utils');
+const {newError, genId} = require('../utils');
 
 class authorModel{
     // Recibe un id, comprueba y regresa un autor, genera un error en caso de falla
@@ -31,28 +31,36 @@ class authorModel{
         }
     }
     // Registra un usuario, lanza error si falla
-    static async register(newId=null, newFullname=null, newNationality=null){
+    static async register(newFullname=null, newNationality=null){
         const mainSqlQuery = 'INSERT Authors(id, fullname, nationality) VALUES (?, ?, ?)';
         try {
-            if (!newId)
-                throw newError(400, "Faltan el parametro newId");
             if (!newFullname)
                 throw newError(400, "Falta el parametro newFullname");
             if (!newNationality)
                 throw newError(400, "Falta el parametro newNationality");
-            if (newId.length == 0 || newId.length > 15)
-                throw newError(400, "El Id no cumple los requisitos de dato");
             if (newFullname.length == 0 || newFullname.length > 100)
                 throw newError(400, "El nombre no cumple los requisitos de dato");
             if (newNationality.length == 0 || newNationality > 50)
                 throw newError(400, "La nacionalidad no cumple los requisitos de dato");
-            const result = await this.find(newId);
-            if (!result)
-                throw newError(500, "Error en la consulta");
-            if (result.length > 0)
-                throw newError(400, "El registro ya existe");
+
+            let newId = genId(15);
+            let pass = false;
+            let result = null;
+            do {
+                result = await this.find(newId);
+                if (!result)
+                    throw newError(500, 'Error interno en consulta');
+                if (result.length == 0)
+                    pass = true;
+                else
+                    newId = genId(15);
+            } while (pass == false);
             await db.query(mainSqlQuery, [newId, newFullname, newNationality]);
-            return 0;
+            return {
+                id: newId,
+                fullName: newFullname,
+                nationality: newNationality
+            };
         } catch (error) {
             throw error;
         }

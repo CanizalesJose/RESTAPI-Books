@@ -1,5 +1,5 @@
 const db = require('../connection/db');
-const {newError} = require('../utils');
+const {newError, genId} = require('../utils');
 
 class categoryDAO{
     // Busca una categoria en base a una id, regresa [] si falla, [{id:?, descr:?}] si no
@@ -32,23 +32,28 @@ class categoryDAO{
         }
     }
     // Crea una categoria, regresa error si falla, regresa 0 si no
-    static async register(id, descr){
+    static async register(descr){
         const mainSqlQuery = 'INSERT Categories(id, descr) VALUES (?, ?)';
         try{
-            if (!id)
-                throw newError(400, "Falta el parametro id");
             if (!descr)
                 throw newError(400, "Falta el parametro descr");
-            if (id.length > 15 || id.length == 0)
-                throw newError(400, "El parametro id no cumple los requisitos de dato");
             if (descr.length > 100 || descr.length == 0)
                 throw newError(400, 'El parametro descr no cumple los requisitos de dato');
-            const exists = await this.find(id);
-            if (!exists)
-                throw newError(500, 'Error en la consulta');
-            if (exists && exists.length != 0)
-                throw newError(400, 'El registro ya existe');
+            // Generar un id único
+            let pass = false;
+            let id = genId(15);
+            let result = null;
+            do {
+                result = await this.find(id);
+                if (!result)
+                    throw newError(500, 'Error interno en el servidor');
+                if (result.length == 0)
+                    pass = true;
+                else
+                    id = genId(15);
+            } while (!pass);
             await db.query(mainSqlQuery, [id, descr]);
+            return {id: id, descr: descr};
         }catch(error){
             throw error;
         }
