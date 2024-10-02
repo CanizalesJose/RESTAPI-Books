@@ -95,7 +95,6 @@ INSERT INTO Categories (id, descr) VALUES
 
 -- Libros de Gabriel García Márquez
 INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category) VALUES
-('B001', 'Cien años de soledad', '978-0060883287', 'A001', 'Random House', 1967, 'C001'),
 ('B002', 'El otoño del patriarca', '978-0307389730', 'A001', 'Vintage', 1975, 'C001'),
 ('B003', 'El amor en los tiempos del cólera', '978-0307389730', 'A001', 'Vintage', 1985, 'C001'),
 
@@ -143,4 +142,6 @@ INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category) VA
 
 -- Libros de Hermann Hesse
 ('B028', 'Siddhartha', '978-0553208849', 'A011', 'New Directions', 1922, 'C001'),
-('B029', 'El lobo estepario', '978-0805210600', 'A011', 'Henry Holt and Co.', 1927, 'C001')
+('B029', 'El lobo estepario', '978-0805210600', 'A011', 'Henry Holt and Co.', 1927, 'C001');
+
+INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, imageUrl) VALUES ('B001', 'Cien años de soledad', '978-0060883287', 'A001', 'Random House', 1967, 'C001', 'https://m.media-amazon.com/images/I/91TvVQS7loL._AC_UF1000,1000_QL80_.jpg');
