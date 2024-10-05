@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Recuperar puerto de las variables de entorno o usar 5000 por defecto
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || '5000';
 const host = process.env.HOST || 'localhost';
 // Generar middleware para documentación
 const swaggerOptions = {

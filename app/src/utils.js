@@ -8,7 +8,7 @@ const authenticateToken = (req, res, next) => {
     // Si no se ingresa un token, regresa estado de error
     if (!token) return res.status(401).json({message: 'Falta token de autenticación'});
 
-    jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+    jwt.verify(token, process.env.SECRET_KEY || 'test', (err, user) => {
         // Si el token no es valido, regresa un estado de error
         if (err) return res.status(401).json({message: 'Token rechazado'});
         // Si no se genera el error, entonces guarda los datos del usuario que generó el token en la variable de la request

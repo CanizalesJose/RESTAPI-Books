@@ -16,9 +16,10 @@ router.post('/login/:username', async (req, res) => {
         if (!user || user.length == 0 || !bcrypt.compareSync(password, user[0]['userpassword'])){
             return res.status(401).json({message: 'Credenciales inválidas'});
         }
-        const token = jwt.sign({username: user[0]['username'], usertype: user[0]['usertype']}, process.env.SECRET_KEY, {expiresIn: '4h'});
+        const token = jwt.sign({username: user[0]['username'], usertype: user[0]['usertype']}, process.env.SECRET_KEY || 'test', {expiresIn: '4h'});
         return res.status(201).json({token: token, username: user[0]['username'], usertype: user[0]['usertype']});
     } catch (error) {
+        console.log(error);
         if (error.sqlState){
             if (error.errno == 1451)
                 return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
@@ -31,7 +32,7 @@ router.post('/login/:username', async (req, res) => {
 // Confirma que un token siga en funcionamiento
 router.get('/validToken', authenticateToken, async (req, res) => {
     printPath(req.path, req.method);
-    return res.status(200).json(req.user);
+    return res.status(200).json({user: req.user});
 });
 router.get('/validAdmin', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);

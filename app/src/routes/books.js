@@ -9,8 +9,10 @@ router.get('/:id', async (req, res) => {
         const book = await bookDAO.find(id);
         return res.status(200).json(book);
     } catch (error) {
-        if (error.sqlState)
+        if (error.sqlState){
+            console.log(error);
             return res.status(500).json({message: 'Error interno en consulta'});
+        }
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});
     }

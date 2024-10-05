@@ -20,7 +20,7 @@ class userDAO {
             if (!username)
                 throw newError(400, "Falta parametro username");
             if (username.length == 0 || username.length > 30)
-                throw newError(400, "El username no cumple los requisitos de dato");
+                throw newError(400, "El username no cumple los requisitos de longitud");
             const result = await db.query(sqlQuery, [username]);
             if (!result)
                 throw newError(500, "Error en la consulta");
@@ -44,15 +44,19 @@ class userDAO {
             if (!email)
                 throw newError(400, 'Falta el parametro email');
             if (username.length == 0 || username.length > 30)
-                throw newError(400, 'El parametro username no cumple los requisitos de dato');
+                throw newError(400, 'El parametro username no cumple los requisitos de longitud');
             if (password.length == 0 || password.length > 100)
-                throw newError(400, 'El parametro password no cumple los requisitos de dato');
+                throw newError(400, 'El parametro password no cumple los requisitos de longitud');
             if (usertype.length == 0 || usertype.length > 15)
-                throw newError(400, 'El parametro usertype no cumple los requisitos de dato');
+                throw newError(400, 'El parametro usertype no cumple los requisitos de longitud');
             if (contactNumber.length == 0 || contactNumber.length > 12)
-                throw newError(400, 'El parametro contactNumber no cumple los requisitos de dato');
+                throw newError(400, 'El parametro contactNumber no cumple los requisitos de longitud');
+            if (!/^[0-9]{10}|[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(contactNumber))
+                throw newError(400, 'El numero de contacto no cumple con ninguno de los formatos');
             if (email.length == 0 || email.length > 100)
-                throw newError(400, 'El parametro email no cumple los requisitos de dato');
+                throw newError(400, 'El parametro email no cumple los requisitos de longitud');
+            if (!/^[a-zA-Z0-9]+\@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/.test(email))
+                throw newError(400, 'El correo no cumple con el formato estándar');
             // Comprobar si ya existe
             const result = await this.findUser(username);
             if (!result)
@@ -76,22 +80,26 @@ class userDAO {
                 throw newError(400, "Falta el parametro username");
             if (newPassword){
                 if (newPassword.length == 0 || newPassword.length > 100)
-                    throw newError(400, 'La contraseña no cumple los requisitos de dato');
+                    throw newError(400, 'La contraseña no cumple los requisitos de longitud');
                 changePassword = true;
                 newPassword = encryptText(newPassword);
             }
             if (!newUsertype)
                 throw newError(400, 'Falta el parametro usertype');
             if (newUsertype.length == 0 || newUsertype.length > 15)
-                throw newError(400, 'El tipo de usuario no cumple los requisitos de dato');
+                throw newError(400, 'El tipo de usuario no cumple los requisitos de longitud');
             if (!newContactNumber)
                 throw newError(400, 'Falta el parametro contactNumber');
             if (newContactNumber.length == 0 || newContactNumber.length > 12)
-                throw newError(400, 'El numero de contacto no cumple los requisitos de dato');
+                throw newError(400, 'El numero de contacto no cumple los requisitos de longitud');
+            if (!/^[0-9]{10}|[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(newContactNumber))
+                throw newError(400, 'El numero de contacto no cumple con ninguno de los formatos');
             if (!newEmail)
                 throw newError(400, 'Falta el parametro email');
             if (newEmail.length == 0 || newEmail.length > 100)
-                throw newError(400, 'El correo no cumple los requisitos de dato');
+                throw newError(400, 'El correo no cumple los requisitos de longitud');
+            if (!/^[a-zA-Z0-9]+\@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/.test(newEmail))
+                throw newError(400, 'El correo no cumple el formato estándar.');
             if (changePassword)
                 await db.query(sqlQuery1, [newPassword, newUsertype, newContactNumber, newEmail, username]);
             if (!changePassword)

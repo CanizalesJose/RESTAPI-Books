@@ -1,13 +1,19 @@
 tags:
   - name: Usuarios
-    description: Rutas relacionadas con el proceso de login, autenticación y gestión de usuarios.
+    description: Rutas relacionadas con el proceso de autenticación, validación de acceso y gestión de usuarios.
 
-/api/users/login:
+/api/users/login/{username}:
   post:
+    parameters:
+      - in: path
+        name: username
+        required: true
+        schema:
+          type: string
+        description: El nombre del usuario que esta generando el token
     tags:
       - Usuarios
-    description: Recibe credenciales de usuario y genera un token temporal.
-    summary: Autentica al usuario y genera un JWT.
+    summary: A partir de unas credenciales válidas de acceso, genera un token firmado con los datos del usuario. Expira en 8 horas.
     requestBody:
       required: true
       content:
@@ -15,19 +21,14 @@ tags:
           schema:
             type: object
             required:
-              - username
               - password
             properties:
-              username:
-                type: string
-                description: Nombre de usuario, debe tener entre 1 y 15 caracteres.
-                example: usuario123
               password:
                 type: string
                 description: Contraseña secreta de usuario, de preferencia usar una fuerte. Debe tener entre 1 y 100 caracteres. No hay requisitos especiales.
     responses:
       201:
-        description: Autenticación exitosa, se devuelve un token JWT.
+        description: Autenticación exitosa, se devuelve un token de autenticación.
         content: 
           application/json:
             schema:
@@ -35,17 +36,24 @@ tags:
               properties:
                 token:
                   type: string
-                  description: Token de autenticación. Se debe guardar en el navegador y mandar en el header de las peticiones http del usuario, ya que se usa para autenticar su identidad. Dura 20 minutos.
+                  description: Token de autenticación. Esta firmado por el usuario que la generó y tiene una validez de 8 horas, una jornada laboral.
                 username:
                   type: string
-                  description: Nombre del usuario que generó el token. Se puede guardar en el navegador para presentar una web dinámica basada en el usuario activo.
+                  description: Nombre del usuario que generó el token.
                   example: usuario123
                 usertype:
                   type: string
                   description: Tipo de usuario autenticado, puede ser admin o client.
                   example: admin
       400:
-        description: Error del cliente a la hora de mandar los datos.
+        description: Error en la solicitud. Puede referirse a un dato mal mandado.
+        content: 
+          application/json:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Mensaje dinámico que detalla el problema de la petición.
       401:
         description: Credenciales incorrectas.
       500:
@@ -55,8 +63,7 @@ tags:
   post:
     tags:
       - Usuarios
-    description: Ruta auxiliar para verificar si un token sigue vigente o debe ser eliminado de la memoria del cliente.
-    summary: Ruta para verificar token.
+    summary: Ruta para verificar la validez de un token sin ninguna acción adicional.
     parameters:
       - in: header
         name: token
@@ -106,13 +113,18 @@ tags:
                   description: Recomendación de limpiar el token del cliente.
 
 
-/api/users/register:
+/api/users/register/{username}:
   post:
     tags:
       - Usuarios
-    description: Ruta de administración la cual permite crear un usuario en base a un username, password y usertype, es usada por un administrador para crear un nuevo usuario que puede ser otro administrador.
     summary: Ruta para crear nuevos usuarios, puede crear administradores
     parameters:
+      - in: path
+        name: username
+        description: Nombre del usuario que se esta generando
+        schema:
+          type: string
+        required: true
       - in: header
         name: token
         schema:
@@ -126,36 +138,51 @@ tags:
           schema:
             type: object
             required:
-              - username
               - password
               - usertype
+              - contactNumber
+              - email
             properties:
-              username:
-                type: string
-                description: Nombre del usuario, no debe ser mayor a 15 caracteres y no puede estar vacío.
-                example: usuario123
               password:
                 type: string
                 description: Contraseña de usuario, no puede estar vacío y debe ser menor a 100 caracteres. No tiene requisitos especiales.
-                example: soyunpassword12345
               usertype:
                 type: string
                 description: Es el tipo de usuario, definirá los privilegios y acceso a rutas de la API, así como debería limitar su acceso a la aplicación. Solo puede ser admin o client.
-                example: admin
+              contactNumber:
+                type: string
+                description: Número de contacto del usuario. Debe tener una longitud igual o menor a 12 caracteres, dejando libre el uso del formato 123-123-1234 o 1234567890.
+              email:
+                type: string
+                description: Correo electronico del usuario. Debe tener menos de 100 caracteres y el formato estándar de un correo.
     responses:
       201:
-        description: La ruta ha funcionado sin errores y un nuevo usuario ha sido creado.
+        description: Nuevo usuario creado
       400:
-        description: Hubo un error por parte del usuario y se puede volver a mandar la petición para solucionarlo.
+        description: Error en la petición
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalle los motivos del fallo en la petición
       500:
-        description: Hubo un error interno en el servidor por un error mal manejado o alguna parte de la arquitectura no funciona. Se debe esperar a que se arregle.
+        description: Error interno del servidor. Generalmente un error no definido.
 
-/api/users/registerClient:
+/api/users/registerClient/{username}:
   post:
     tags:
       - Usuarios
-    description: Ruta general para dar de alta usuarios cliente.
     summary: Ruga pública para dar de alta clientes nuevos
+    parameters:
+      - in: path
+        name: username
+        description: Nombre del cliente generado
+        required: true
+        schema:
+          type: string
     requestBody:
       required: true
       content:
@@ -163,13 +190,8 @@ tags:
           schema:
             type: object
             required:
-              - username
               - password
             properties:
-              username:
-                type: string
-                description: Nombre de usuario en texto plano, no puede estar vacío y no debe ser mayor de 30 caracteres.
-                example: usuario123
               password:
                 type: string
                 description: Contraseña de usuario, no puede estar vacío y debe ser menor a 100 caracteres. No tiene requisitos especiales.
@@ -194,7 +216,6 @@ tags:
   get:
     tags:
       - Usuarios
-    description: Ruta protegida solo para administradores. Realiza una consulta de todos los usuarios que existen, útil para construir un menú de administración de usuarios.
     summary: Ruta restringida que regresa todos los usuarios registrados.
     parameters:
       - in: header
@@ -205,7 +226,7 @@ tags:
         description: Token de autenticación firmado por la api a través de la ruta /login
     responses:
       200:
-        description: Consulta éxitosa, se regresan los usuarios en una lista.
+        description: Regresa una lista de usuarios
         content:
           application/json:
             schema:
@@ -220,13 +241,18 @@ tags:
       500:
         description: Hubo un error interno en el servidor. Generalmente con la base de datos o una mala configuración.
 
-/api/users/update:
+/api/users/update/{username}:
   patch:
     tags:
       - Usuarios
-    description: Ruta protegida solo para administradores. Recibe obligatoriamente un username para identificar el usuario a actualizar. Puede recibir password y usertype juntos o solo uno de ellos. Se actualizarán los campos mandados, pero se requiere de por lo menos uno de ellos.
-    summary: Solo administradores. Actualiza los datos de un usuario sin pedir credenciales.
+    summary: Solo administradores. Actualiza los datos de un usuario sin pedir credenciales del usuario modificado.
     parameters:
+      - in: path
+        name: username
+        required: true
+        description: El nombre del usuario que se está actualizando. Este usuario no puede ser el mismo que firmó el token de autorización.
+        schema:
+          type: string
       - in: header
         name: token
         schema:
@@ -240,17 +266,22 @@ tags:
           schema:
             type: object
             required:
-              - username
+              - usertype
+              - contactNumber
+              - email
             properties:
-              username:
-                type: string
-                description: Dato obligatorio. Nombre de usuario que se va a actualizar.
               password:
                 type: string
-                description: Dato opcional. Nueva contraseña de usuario. Debe ser mandada en texto plano o cifrada en una comunicación HTTPS.
+                description: Nueva contraseña que reemplazará a la antigüa. Dato opcional que si no se especifica, se mantendrá el valor anterior.
               usertype:
                 type: string
-                description: Dato opcional. Nuevo tipo de usuario. Puede ser admin o client.
+                description: El nuevo tipo de usuario del usuario. Puede ser admin o client.
+              contactNumber:
+                type: string
+                description: Un nuevo número de contacto. Debe tener el formato 1234567890 o 123-123-1234.
+              email:
+                type: string
+                description: Nuevo correo electronico, debe tener el formato estándar y no tener mas de 100 caracteres.
     responses:
       201:
         description: El usuario se ha actualizado correctamente con todos los parametros enviados.
