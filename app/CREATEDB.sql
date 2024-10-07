@@ -1,4 +1,5 @@
 DROP DATABASE IF EXISTS booksCenter;
+SET GLOBAL event_scheduler = ON;
 
 CREATE DATABASE booksCenter default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
@@ -23,6 +24,8 @@ CREATE TABLE Books(
     publisher VARCHAR(100),
     publishYear INT,
     category VARCHAR(15),
+    copies INT DEFAULT 1,
+    loanCopies INT DEFAULT 0,
     imageUrl VARCHAR(255) DEFAULT 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s',
     FOREIGN KEY (author) REFERENCES Authors(id) ON DELETE RESTRICT,
     FOREIGN KEY (category) REFERENCES Categories(id) ON DELETE RESTRICT
@@ -33,7 +36,8 @@ CREATE TABLE Users(
     userPassword VARCHAR(100),
     usertype VARCHAR(15),
     contactNumber VARCHAR(12),
-    email VARCHAR(100)
+    email VARCHAR(100),
+    penalized BOOLEAN DEFAULT FALSE
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
 CREATE TABLE Loans(
@@ -47,7 +51,7 @@ CREATE TABLE Loans(
 CREATE TABLE LoanDetails(
     id INT AUTO_INCREMENT PRIMARY KEY,
     loanId VARCHAR(15),
-    bookid VARCHAR(15),
+    bookId VARCHAR(15),
     returned BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (loanId) REFERENCES Loans(id) ON DELETE RESTRICT,
     FOREIGN KEY (bookId) REFERENCES Books(id) ON DELETE RESTRICT
@@ -145,3 +149,47 @@ INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category) VA
 ('B029', 'El lobo estepario', '978-0805210600', 'A011', 'Henry Holt and Co.', 1927, 'C001');
 
 INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, imageUrl) VALUES ('B001', 'Cien años de soledad', '978-0060883287', 'A001', 'Random House', 1967, 'C001', 'https://m.media-amazon.com/images/I/91TvVQS7loL._AC_UF1000,1000_QL80_.jpg');
+
+DELIMITER //
+
+CREATE TRIGGER checkLoanCopies_beforeNewLoan BEFORE INSERT ON LoanDetails
+FOR EACH ROW
+BEGIN
+    IF (SELECT loanCopies from Books WHERE id = NEW.bookId) + 1 > (SELECT copies FROM Books WHERE id = NEW.bookId) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pueden prestar mas copias de este libro';
+    ELSE
+        UPDATE Books SET loanCopies = loanCopies + 1 WHERE id = NEW.bookId;
+    END IF;
+END;
+//
+
+CREATE TRIGGER checkLoanCopies_afterReturn BEFORE UPDATE ON LoanDetails
+FOR EACH ROW
+BEGIN
+    IF NEW.returned = TRUE AND OLD.returned = FALSE THEN
+        UPDATE Books SET loanCopies = loanCopies - 1 WHERE id = NEW.bookId;
+    ELSEIF NEW.returned = FALSE AND OLD.returned = TRUE THEN
+        UPDATE Books SET loanCopies = loanCopies + 1 WHERE id = NEW.bookId;
+    END IF;
+END;
+//
+
+CREATE EVENT penalize_users
+ON SCHEDULE EVERY 24 HOUR
+DO
+BEGIN
+    -- Actualiza el campo penalized de los usuarios con libros atrasados
+    UPDATE Users
+    SET penalized = TRUE
+    WHERE userName IN (
+        SELECT u.userName
+        FROM Users u
+        JOIN Loans l ON u.userName = l.username
+        JOIN LoanDetails ld ON l.id = ld.loanId
+        WHERE ld.returned = FALSE
+        AND l.returnDate < CURDATE()
+    );
+END;
+//
+
+DELIMITER ;
