@@ -1,8 +1,8 @@
 var router = require('express').Router();
 const bookDAO = require('../models/bookDAO');
-const {authenticateToken, authorizeRoles, printPath, genId} = require('../utils');
+const {authenticateToken, authorizeRoles, printPath} = require('../utils');
 
-router.get('/:id', async (req, res) => {
+router.get('/find/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
         const id = req.params.id;
@@ -18,7 +18,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.get('/find/All', async (req, res) => {
+router.get('/findAll', async (req, res) => {
     printPath(req.path, req.method);
     try {
         const allBooks = await bookDAO.findAll();
@@ -31,7 +31,7 @@ router.get('/find/All', async (req, res) => {
     }
 });
 
-router.get('/find/title/:title', async (req, res) => {
+router.get('/find/title/:title', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
         const title = req.params.title;
@@ -48,11 +48,11 @@ router.get('/find/title/:title', async (req, res) => {
     }
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try{
-        const {title, isbn, author, publisher, publishYear, category, imageUrl} = req.body;
-        const newBook = await bookDAO.register(title, isbn, author, publisher, publishYear, category, imageUrl);
+        const {title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
+        const newBook = await bookDAO.register(title, isbn, author, publisher, publishYear, category, copies, imageUrl);
         return res.status(201).json({
             message: "Libro registrado correctamente",
             book: newBook
@@ -65,12 +65,12 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.patch('/update/:id', async (req, res) => {
+router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try{
         const id = req.params.id;
-        const {title, isbn, author, publisher, publishYear, category, imageUrl} = req.body;
-        await bookDAO.update(id, title, isbn, author, publisher, publishYear, category, imageUrl);
+        const {title, isbn, author, publisher, publishYear, category, copies, loanCopies, imageUrl} = req.body;
+        await bookDAO.update(id, title, isbn, author, publisher, publishYear, category, copies, loanCopies, imageUrl);
         return res.status(200).json({message: "Libro actualizado"});
     } catch (error) {
         if (error.sqlState){
@@ -83,7 +83,7 @@ router.patch('/update/:id', async (req, res) => {
     }
 });
 
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
     try {
         const id = req.params.id;

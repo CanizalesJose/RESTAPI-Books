@@ -3,7 +3,7 @@ const {encryptText, newError} = require('../utils');
 
 class userDAO {
     static async findAllUsers(){
-        const sqlQuery = 'SELECT username, usertype, contactNumber, email FROM Users';
+        const sqlQuery = 'SELECT username, usertype, contactNumber, email, penalized FROM Users';
         try {
             const results = await db.query(sqlQuery);
             if (!results)

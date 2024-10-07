@@ -33,8 +33,7 @@ class loansDAO{
             var returnDate = new Date(loanDate.getTime()+7*24*60*60*1000);
             loanDate = loanDate.toISOString().split('T')[0];
             returnDate = returnDate.toISOString().split('T')[0];
-            console.log(loanDate);
-            console.log(returnDate);
+            
             if (!booksList)
                 throw newError(400, "Falta el parametro booksList");
             if (!Array.isArray(booksList))
