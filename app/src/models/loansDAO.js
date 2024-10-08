@@ -100,14 +100,27 @@ class loansDAO{
             throw error;
         }
     }
-    static async findAll(id){
-        const sqlQuery = 'SELECT loans.id AS id, books.id AS bookId, books.title AS title FROM loans INNER JOIN loandetails ON loans.id = loandetails.loanid INNER JOIN books ON loandetails.bookId = books.id WHERE loans.id = ?';
-        if (!id)
-            throw newError(400, "Falta el parametro id");
-        await db.query(sqlQuery, [id])
+    static async findAll(){
+        const sqlQuery = 'SELECT Loans.username as username, Loans.id AS id, Books.id AS bookId, Books.imageUrl as cover, Books.title as title, Authors.fullName as author, Categories.descr as category, Books.isbn as isbn, returned FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanid INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Categories on Categories.id = Books.category INNER JOIN Authors on Books.author = Authors.id';
+        return db.query(sqlQuery)
         .then(res => {
-            // regresar resultados
+            // regresar resultados id, bookId, title
             return res;
+        })
+        .catch(error => {
+            throw newError(500, `Error interno en la consulta: ${error.message}`);
+        });
+    }
+    static async findFromUser(username){
+        const sqlQuery = 'SELECT Loans.username as username, Loans.id AS id, Books.id AS bookId, Books.imageUrl as cover, Books.title as title, Authors.fullName as author, Categories.descr as category, Books.isbn as isbn, returned FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanid INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Categories on Categories.id = Books.category INNER JOIN Authors on Books.author = Authors.id WHERE username = ?';
+        if (!username)
+            throw newError(400, "Falta el parámetro username");
+        return db.query(sqlQuery, [username])
+        .then(res => {
+            return res;
+        })
+        .catch(error => {
+            throw newError(500, `Error interno en la consulta: ${error.message}`);
         });
     }
 }

@@ -22,7 +22,9 @@ router.post('/register', authenticateToken, async (req, res) => {
 
 router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
+        printPath(req.path, req.method);
         
+        return res.status(200).json(await loanDAO.findAll());
     } catch (error) {
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});
