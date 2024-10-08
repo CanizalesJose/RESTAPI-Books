@@ -6,9 +6,9 @@ const {printPath} = require('../utils');
 // var [elemento] = require('[./elemento]');
 const users = require('./users');
 const categories = require('./categories');
-// Pendientes
-const authors = require('./authors');   /* Dar revisión */
+const authors = require('./authors');
 const books = require('./books');
+const loans = require('./loans');
 
 // Por cada paquete de rutas se agrega una raíz al objeto Router
 // router.use('/rutaRaíz', rutas);
@@ -17,6 +17,7 @@ router.use('/users', users);
 router.use('/categories', categories);
 router.use('/authors', authors);
 router.use('/books', books);
+router.use('/loans', loans);
 
 // Crear rutas del sistema, propias de la base de la API
 router.get('/', async function (req, res) {

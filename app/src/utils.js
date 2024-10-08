@@ -56,11 +56,20 @@ const genId = (length) => {
 
     return result;
 }
+const isJSON = (string) => {
+    try {
+        JSON.parse(string);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
 module.exports = {
     authenticateToken, 
     printPath, 
     authorizeRoles, 
     encryptText, 
     newError,
-    genId
+    genId,
+    isJSON
 }
