@@ -2,7 +2,7 @@ const router = require('express').Router();
 const loanDAO = require('../models/loansDAO');
 const { authenticateToken, authorizeRoles, printPath } = require('../utils');
 
-router.post('/register', authenticateToken, async (req, res) => {
+router.post('/new', authenticateToken, async (req, res) => {
     try {
         printPath(req.path, req.method);
         const { booksList } = req.body;
@@ -20,11 +20,37 @@ router.post('/register', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
         printPath(req.path, req.method);
         
         return res.status(200).json(await loanDAO.findAll());
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
+router.get('/fetchUser/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    try {
+        printPath(req.path, req.method);
+        const username = req.params.username;
+        return res.status(200).json(await loanDAO.findFromUser(username));
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
+router.patch('/update/:loanId/:bookId/:newStatus', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    try {
+        printPath(req.path, req.method);
+        const loanId = req.params.loanId;
+        const bookId = req.params.bookId;
+        const newStatus = req.params.newStatus;
+        await loanDAO.updateReturn(newStatus, loanId, bookId);
+        return res.sendStatus(200);
+
     } catch (error) {
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});

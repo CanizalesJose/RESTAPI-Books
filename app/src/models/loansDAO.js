@@ -123,6 +123,24 @@ class loansDAO{
             throw newError(500, `Error interno en la consulta: ${error.message}`);
         });
     }
+    static async updateReturn(newStatus, loanId, bookId){
+        const sqlQuery = 'UPDATE loanDetails SET returned = ? WHERE loanId = ? AND bookId = ?';
+        if (!newStatus)
+            throw newError(400, 'Falta el parámetro newStatus');
+        if (isNaN(parseInt(newStatus)))
+            throw newError(400, 'El nuevo estado debe ser 0 o 1');
+        newStatus = parseInt(newStatus);
+        if (newStatus > 1 || newStatus < 0)
+            throw newError(400, "El nuevo estado debe ser verdadero (0) o falso (1)");
+        if (!loanId)
+            throw newError(400, "Falta el parametro loanId");
+        if (!bookId)
+            throw newError(400, "Falta el parametro bookId");
+        db.query(sqlQuery, [newStatus, loanId, bookId])
+        .catch(error => {
+            throw newError(500, `Error interno en la consulta: ${error.message}`);
+        });
+    }
 }
 
 module.exports = loansDAO;
