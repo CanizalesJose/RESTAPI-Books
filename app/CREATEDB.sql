@@ -156,14 +156,16 @@ CREATE TRIGGER checkLoanCopies_beforeNewLoan BEFORE INSERT ON LoanDetails
 FOR EACH ROW
 BEGIN
     IF (SELECT loanCopies from Books WHERE id = NEW.bookId) + 1 > (SELECT copies FROM Books WHERE id = NEW.bookId) THEN
+    BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se pueden prestar mas copias de este libro';
+    END;
     ELSE
         UPDATE Books SET loanCopies = loanCopies + 1 WHERE id = NEW.bookId;
     END IF;
 END;
 //
 
-CREATE TRIGGER checkLoanCopies_afterReturn BEFORE UPDATE ON LoanDetails
+CREATE TRIGGER checkLoanCopies_afterReturn AFTER UPDATE ON LoanDetails
 FOR EACH ROW
 BEGIN
     IF NEW.returned = TRUE AND OLD.returned = FALSE THEN

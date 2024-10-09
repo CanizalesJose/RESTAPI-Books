@@ -19,6 +19,13 @@ class loansDAO{
             throw error;
         }
     }
+    static async checkCopies(bookId){
+        const sqlQuery = 'SELECT copies, loanCopies from Books WHERE id = ?';
+        return await db.query(sqlQuery, [bookId])
+        .then(res => {
+            return res[0];
+        });
+    }
     // El cliente manda la fecha en que pidió los libros y la lista con los id de los libros pedidos
     // Los libros se regresan una semana despues como máximo
     // El id del prestamo se genera dinamicamente
@@ -75,7 +82,17 @@ class loansDAO{
                 throw newError(500, "Error interno en la consulta");
             if (result.length == 0)
                 throw newError(400, "El usuario no existe");
-
+            // Revisar las copias de cada libro
+            console.log(booksList);
+            let missingBooks = [];
+            for (const book of booksList) {
+                let checkedBook = await this.checkCopies(book);
+                if (checkedBook.loanCopies+1 > checkedBook.copies)
+                    missingBooks.push(book);
+            }
+            if (missingBooks.length != 0)
+                throw newError(400, `Estos libros estan agotados: ${missingBooks}`);
+            // Para este punto, todo debería estar bien y se pueden hacer los inserts
             const sqlQuery1 = 'INSERT Loans(id, username, loanDate, returnDate) VALUES (?, ?, ?, ?)';
             const sqlQuery2 = 'INSERT LoanDetails(loanId, bookId) VALUES (?, ?)';
             // Genera un nuevo prestamo
@@ -84,7 +101,7 @@ class loansDAO{
                 // Si se puede crear el registro, se intenta generar el detalle por cada libro
                 for (const book of booksList){
                     await db.query(sqlQuery2, [newId, book])
-                    .catch(error => {
+                    .catch(async error => {
                         // Si no se puede, se gestiona un error para que lo atrape la query original
                         if (error.sqlState && error.sqlState=='45000')
                             throw newError(400, error.message + ` ${book}`);
@@ -110,6 +127,31 @@ class loansDAO{
         .catch(error => {
             throw newError(500, `Error interno en la consulta: ${error.message}`);
         });
+    }
+    // Regresa el ID de los prestamos que estan completamente regresados
+    static async findReturned(){
+        const sqlQuery = 'select loans.id from loans join loandetails on loans.id = loandetails.loanid group by loans.id having count(*) = sum(loandetails.returned)';
+        return db.query(sqlQuery)
+        .then(res => {
+            return res;
+        });
+    }
+    static async findPending(){
+        const sqlQuery ='select loans.id from loans join loandetails on loans.id = loandetails.loanid group by loans.id having sum(loandetails.returned = FALSE) > 0';
+        return db.query(sqlQuery)
+        .then(res => {
+            return res;
+        });
+    }
+    static async findIDs(){
+        const sqlQuery = 'SELECT id from Loans';
+        return db.query(sqlQuery)
+        .then(res => {
+            return res;
+        })
+        .catch(error => {
+            throw newError(500, `Error interno en la consulta: ${error.message}`);
+        })
     }
     static async findFromUser(username){
         const sqlQuery = 'SELECT Loans.username as username, Loans.id AS id, Books.id AS bookId, Books.imageUrl as cover, Books.title as title, Authors.fullName as author, Categories.descr as category, Books.isbn as isbn, returned FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanid INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Categories on Categories.id = Books.category INNER JOIN Authors on Books.author = Authors.id WHERE username = ?';
