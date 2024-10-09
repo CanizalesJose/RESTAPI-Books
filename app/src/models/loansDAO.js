@@ -83,7 +83,6 @@ class loansDAO{
             if (result.length == 0)
                 throw newError(400, "El usuario no existe");
             // Revisar las copias de cada libro
-            console.log(booksList);
             let missingBooks = [];
             for (const book of booksList) {
                 let checkedBook = await this.checkCopies(book);
@@ -117,9 +116,9 @@ class loansDAO{
             throw error;
         }
     }
-    static async findAll(){
-        const sqlQuery = 'SELECT Loans.username as username, Loans.id AS id, Books.id AS bookId, Books.imageUrl as cover, Books.title as title, Authors.fullName as author, Categories.descr as category, Books.isbn as isbn, returned FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanid INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Categories on Categories.id = Books.category INNER JOIN Authors on Books.author = Authors.id';
-        return db.query(sqlQuery)
+    static async fetchById(id){
+        const sqlQuery = 'SELECT Books.id AS bookId, Books.imageUrl as cover, Books.title as title, Authors.fullName as author, Categories.descr as category, Books.isbn as isbn, returned FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanid INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Categories on Categories.id = Books.category INNER JOIN Authors on Books.author = Authors.id WHERE Loans.id = ?';
+        return db.query(sqlQuery, [id])
         .then(res => {
             // regresar resultados id, bookId, title
             return res;
@@ -129,29 +128,20 @@ class loansDAO{
         });
     }
     // Regresa el ID de los prestamos que estan completamente regresados
-    static async findReturned(){
-        const sqlQuery = 'select loans.id from loans join loandetails on loans.id = loandetails.loanid group by loans.id having count(*) = sum(loandetails.returned)';
+    static async fetchReturned(){
+        const sqlQuery = 'select loans.id as id, loans.username as username, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate from loans join loandetails on loans.id = loandetails.loanid group by loans.id having count(*) = sum(loandetails.returned)';
         return db.query(sqlQuery)
         .then(res => {
             return res;
         });
     }
-    static async findPending(){
-        const sqlQuery ='select loans.id from loans join loandetails on loans.id = loandetails.loanid group by loans.id having sum(loandetails.returned = FALSE) > 0';
+    // Regresa el ID de los prestamos que tengan al menos un libro pendiente
+    static async fetchPending(){
+        const sqlQuery ='select loans.id as id, loans.username as username, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate from loans join loandetails on loans.id = loandetails.loanid group by loans.id having sum(loandetails.returned = FALSE) > 0';
         return db.query(sqlQuery)
         .then(res => {
             return res;
         });
-    }
-    static async findIDs(){
-        const sqlQuery = 'SELECT id from Loans';
-        return db.query(sqlQuery)
-        .then(res => {
-            return res;
-        })
-        .catch(error => {
-            throw newError(500, `Error interno en la consulta: ${error.message}`);
-        })
     }
     static async findFromUser(username){
         const sqlQuery = 'SELECT Loans.username as username, Loans.id AS id, Books.id AS bookId, Books.imageUrl as cover, Books.title as title, Authors.fullName as author, Categories.descr as category, Books.isbn as isbn, returned FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanid INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Categories on Categories.id = Books.category INNER JOIN Authors on Books.author = Authors.id WHERE username = ?';

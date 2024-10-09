@@ -20,20 +20,31 @@ router.post('/new', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/fetchAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchByID/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
         printPath(req.path, req.method);
-        return res.status(200).json(await loanDAO.findAll());
+        const id = req.params.id;
+        return res.status(200).json(await loanDAO.fetchById(id));
     } catch (error) {
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});
     }
 });
 
-router.get('/fetchIDs', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchReturned', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
         printPath(req.path, req.method);
-        return res.status(200).json(await loanDAO.findIDs());
+        return res.status(200).json(await loanDAO.fetchReturned());
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
+router.get('/fetchPending', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    try {
+        printPath(req.path, req.method);
+        return res.status(200).json(await loanDAO.fetchPending());
     } catch (error) {
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});
