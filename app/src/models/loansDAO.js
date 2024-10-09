@@ -120,7 +120,6 @@ class loansDAO{
         const sqlQuery = 'SELECT Books.id AS bookId, Books.imageUrl as cover, Books.title as title, Authors.fullName as author, Categories.descr as category, Books.isbn as isbn, returned FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanid INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Categories on Categories.id = Books.category INNER JOIN Authors on Books.author = Authors.id WHERE Loans.id = ?';
         return db.query(sqlQuery, [id])
         .then(res => {
-            // regresar resultados id, bookId, title
             return res;
         })
         .catch(error => {
