@@ -128,7 +128,7 @@ class loansDAO{
     }
     // Regresa el ID de los prestamos que estan completamente regresados
     static async fetchReturned(){
-        const sqlQuery = 'select loans.id as id, loans.username as username, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate from loans join loandetails on loans.id = loandetails.loanid group by loans.id having count(*) = sum(loandetails.returned)';
+        const sqlQuery = 'select loans.id as id, loans.username as username, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate from loans join loandetails on loans.id = loandetails.loanid group by loans.id having count(*) = sum(loandetails.returned) order by date';
         return db.query(sqlQuery)
         .then(res => {
             return res;
@@ -136,7 +136,7 @@ class loansDAO{
     }
     // Regresa el ID de los prestamos que tengan al menos un libro pendiente
     static async fetchPending(){
-        const sqlQuery ='select loans.id as id, loans.username as username, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate from loans join loandetails on loans.id = loandetails.loanid group by loans.id having sum(loandetails.returned = FALSE) > 0';
+        const sqlQuery ='select loans.id as id, loans.username as username, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate from loans join loandetails on loans.id = loandetails.loanid group by loans.id having sum(loandetails.returned = FALSE) > 0 order by date';
         return db.query(sqlQuery)
         .then(res => {
             return res;

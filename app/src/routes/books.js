@@ -69,8 +69,8 @@ router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async 
     printPath(req.path, req.method);
     try{
         const id = req.params.id;
-        const {title, isbn, author, publisher, publishYear, category, copies, loanCopies, imageUrl} = req.body;
-        await bookDAO.update(id, title, isbn, author, publisher, publishYear, category, copies, loanCopies, imageUrl);
+        const {title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
+        await bookDAO.update(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl);
         return res.status(200).json({message: "Libro actualizado"});
     } catch (error) {
         if (error.sqlState){

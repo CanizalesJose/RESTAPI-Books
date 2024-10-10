@@ -131,8 +131,8 @@ class bookDAO {
         }
     }
     // Actualizar un registro
-    static async update(id, title, isbn, author, publisher, publishYear, category, copies, loanCopies, imageUrl){
-        const sqlQuery = 'UPDATE Books SET title = ?, isbn = ?, author = ?, publisher = ?, publishYear = ?, category = ?, copies = ?, loanCopies = ?, imageUrl = ? WHERE id = ?';
+    static async update(id, title, isbn, author, publisher, publishYear, category, copies, imageUrl){
+        const sqlQuery = 'UPDATE Books SET title = ?, isbn = ?, author = ?, publisher = ?, publishYear = ?, category = ?, copies = ?, imageUrl = ? WHERE id = ?';
         try {
             // Comprobar que existan los parametros
             if (!id)
@@ -151,8 +151,6 @@ class bookDAO {
                 throw newError(400, "Falta el parametro category");
             if (!copies)
                 throw newError(400, "Falta el parametro copies");
-            if (!copies)
-                throw newError(400, "Falta el parametro loanCopies");
             if (!imageUrl)
                 throw newError(400, "Falta el parametro imageUrl");
             // Comprobar requisitos de datos
@@ -178,11 +176,6 @@ class bookDAO {
             copies = parseInt(copies);
             if (copies < 1)
                 throw newError(400, "Las copias no pueden ser menor a 1")
-            if (isNaN(parseInt(loanCopies)))
-                throw newError(400, "Las copias prestadas no son un número");
-            loanCopies = parseInt(loanCopies)
-            if (loanCopies < 0)
-                throw newError(400, "Las copias prestadas no pueden ser menos que 0");
             if (imageUrl.length > 255)
                 throw newError(400, "El parametro imageUrl no puede tener mas de 255 caracteres");
             // Comprobar si existen las llaves foraneas (author, category)
@@ -199,9 +192,11 @@ class bookDAO {
                 throw newError(500, "Error en la consulta");
             if (result.length == 0)
                 throw newError(400, "El registro no existe");
-            if (result[0].loanCopies > result[0].copies)
+            if (copies < result[0].loanCopies)
+                throw newError(400, "El numero de copias prestadas no puede ser menor al numero total de copias");
+            if (result[0].loanCopies > copies)
                 throw newError(400, "El número de copias prestadas no puede exceder el número de copias totales");
-            await db.query(sqlQuery, [title, isbn, author, publisher, publishYear, category, copies, loanCopies, imageUrl, id]);
+            await db.query(sqlQuery, [title, isbn, author, publisher, publishYear, category, copies, imageUrl, id]);
         } catch (error) {
             throw error;
         }
