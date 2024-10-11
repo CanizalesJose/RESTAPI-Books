@@ -31,6 +31,14 @@ CREATE TABLE Books(
     FOREIGN KEY (category) REFERENCES Categories(id) ON DELETE RESTRICT
 ) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
 
+CREATE TABLE Catalog(
+    id VARCHAR(15) PRIMARY KEY,
+    bookId VARCHAR(15),
+    summary TEXT,
+    isVisible BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (bookId) REFERENCES Books(id) ON DELETE RESTRICT
+) engine=InnoDB default charset=utf8mb4 collate=utf8mb4_unicode_ci;
+
 CREATE TABLE Users(
     userName VARCHAR(30) PRIMARY KEY,
     userPassword VARCHAR(100),
@@ -149,6 +157,9 @@ INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category) VA
 ('B029', 'El lobo estepario', '978-0805210600', 'A011', 'Henry Holt and Co.', 1927, 'C001');
 
 INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, imageUrl) VALUES ('B001', 'Cien años de soledad', '978-0060883287', 'A001', 'Random House', 1967, 'C001', 'https://m.media-amazon.com/images/I/91TvVQS7loL._AC_UF1000,1000_QL80_.jpg');
+
+INSERT INTO Catalog (id, bookId, summary) VALUES ('QWERTYUIOPASDF', 'B003', 'García Márquez traza la historia de un amor que no ha sido correspondido por medio siglo. Aunque nunca parece estar propiamente contenido, el amor fluye a traves de la novela de mil maneras: alegre, melancólico, enriquecedor, siempre sorprendente.');
+INSERT INTO Catalog (id, bookId, summary) VALUES ('ASDFGHJKLZXCVBN', 'B006', 'La trama del libro describe que un peligroso asesino, Sirius Black, se escapó de Azkaban, la prisión de los magos, y al parecer está dispuesto a encontrar y matar a Harry. Se sabe también que es la primera persona en escapar de la prisión de magos y nadie sabe cómo lo hizo.');
 
 DELIMITER //
 

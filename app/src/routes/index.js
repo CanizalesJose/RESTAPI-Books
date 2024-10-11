@@ -9,6 +9,7 @@ const categories = require('./categories');
 const authors = require('./authors');
 const books = require('./books');
 const loans = require('./loans');
+const catalog = require('./catalog');
 
 // Por cada paquete de rutas se agrega una raíz al objeto Router
 // router.use('/rutaRaíz', rutas);
@@ -18,6 +19,7 @@ router.use('/categories', categories);
 router.use('/authors', authors);
 router.use('/books', books);
 router.use('/loans', loans);
+router.use('/catalog', catalog);
 
 // Crear rutas del sistema, propias de la base de la API
 router.get('/', async function (req, res) {
