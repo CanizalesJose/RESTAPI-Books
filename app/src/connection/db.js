@@ -16,7 +16,7 @@ class DB {
 
     async query(sql, params = []) {
         try {
-            const [results, fields] = await this.pool.execute(sql, params);
+            const [results] = await this.pool.execute(sql, params);
             return results;
         } catch (err) {
             throw err;

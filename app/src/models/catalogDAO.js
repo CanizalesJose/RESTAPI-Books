@@ -55,6 +55,23 @@ class catalogDAO{
             throw error;
         }
     }
+    static async remove(id, bookId){
+        try {
+            const sqlQuery = 'DELETE FROM Catalog WHERE id = ? AND bookId = ?';
+            return db.query(sqlQuery, [id, bookId])
+            .then(res => {
+                if (res.affectedRows == 0)
+                    return 'No hubo cambios'
+                else
+                    return 'Registro eliminado';
+            })
+            .catch(error => {
+                throw newError();
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
     static async makeVisible(id, bookId){
         try {
             const sqlQuery = 'UPDATE Catalog SET isVisible = 1 WHERE id = ? AND bookId = ?';
@@ -62,10 +79,11 @@ class catalogDAO{
                 throw newError(400, 'Falta el parametro id');
             if (!bookId)
                 throw newError(400, 'Falta el parametro bookId');
-            let result = db.query('SELECT id FROM Catalog WHERE id = ? AND bookId = ?', [id, bookId])
-            .then(res => {
+            await db.query('SELECT id FROM Catalog WHERE id = ? AND bookId = ?', [id, bookId])
+            .then(async res => {
                 if (res.length != 1)
                     throw newError(400, 'El registro no existe');
+                await db.query(sqlQuery, [id, bookId]);
             })
             .catch(error => {
                 throw newError(500, `Error interno en consulta: ${error.message}`);
@@ -73,6 +91,55 @@ class catalogDAO{
             
         } catch (error) {
          throw error;   
+        }
+    }
+    static async makeNotVisible(id, bookId) {
+        try {
+            const sqlQuery = 'UPDATE Catalog SET isVisible = 0 WHERE id = ? AND bookId = ?';
+            if (!id)
+                throw newError(400, 'Falta el parametro id');
+            if (!bookId)
+                throw newError(400, 'Falta el parametro bookId');
+            await db.query('SELECT id FROM Catalog WHERE id = ? AND bookId = ?', [id, bookId])
+            .then(async res => {
+                if (res.length != 1)
+                    throw newError(400, 'El registro no existe');
+                await db.query(sqlQuery, [id, bookId]);
+            })
+            .catch(error => {
+                throw newError(500, `Error interno en consulta: ${error.message}`);
+            });
+            
+        } catch (error) {
+         throw error;   
+        }
+    }
+    static async fetchNotInCatalog(){
+        try {
+            const sqlQuery = 'SELECT imageUrl, Books.id as bookId, title,  fullName, descr, copies, loanCopies FROM Books INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id  WHERE Books.id NOT IN (SELECT bookId FROM Catalog)';
+            return db.query(sqlQuery)
+            .then(res => {
+                return res;
+            })
+            .catch(error => {
+                throw newError(500, `Error en la consulta: ${error.message}`);
+            });
+        } catch (error) {
+            throw error
+        }
+    }
+    static async fetchInCatalog(){
+        try {
+            const sqlQuery = 'SELECT imageUrl, Books.id as bookId, title,  fullName, descr, copies, loanCopies, isVisible, Catalog.id as catalogId FROM Books INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id  INNER JOIN Catalog on Books.id = Catalog.bookId WHERE Books.id IN (SELECT bookId FROM Catalog) ORDER BY isVisible, title';
+            return db.query(sqlQuery)
+            .then(res => {
+                return res;
+            })
+            .catch(error => {
+                throw newError(500, `Error en la consulta: ${error.message}`);
+            });
+        } catch (error) {
+            throw error;
         }
     }
 }
