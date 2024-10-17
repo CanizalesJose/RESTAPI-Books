@@ -1,4 +1,5 @@
 const mysql = require('mysql2/promise');
+const {newError} = require('../utils');
 
 class DB {
     constructor() {
@@ -19,6 +20,8 @@ class DB {
             const [results] = await this.pool.execute(sql, params);
             return results;
         } catch (err) {
+            if (err.code == 'ECONNREFUSED')
+                throw newError(500, 'Problemas en la conexión a base de datos');
             throw err;
         }
     }

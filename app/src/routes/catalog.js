@@ -35,6 +35,21 @@ router.post('/add/:bookId', authenticateToken, authorizeRoles(['admin']), async 
     }
 });
 
+router.patch('/editSummary/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    try {
+        printPath(req.path, req.method);
+        const id = req.params.id;
+        const bookId = req.params.bookId;
+        const { summary } = req.body;
+        // Actualizar desde el dao
+        await catalogDAO.editSummary(id, bookId, summary);
+        return res.status(200).json({message: 'Sinopsis actualizada'});
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
 router.delete('/remove/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
         printPath(req.path, req.method);

@@ -1,5 +1,6 @@
 const {newError, genId} = require('../utils');
 const db = require('../connection/db');
+const bookDAO = require('./bookDAO');
 
 class catalogDAO{
     static async addBook(bookId, summary, isVisible){
@@ -72,6 +73,23 @@ class catalogDAO{
             throw error;
         }
     }
+    static async editSummary(id, bookId, summary){
+        try {
+            if (!id)
+                return newError(400, 'Falta el parámetro id');
+            if (!bookId)
+                return newError(400, 'Falta el parametro bookId');
+            if (!summary)
+                return newError(400, 'Falta el parametro summary');
+            const sqlQuery = 'UPDATE Catalog SET summary = ? WHERE id = ? AND bookId = ?';
+            await db.query(sqlQuery, [summary, id, bookId])
+            .catch(error => {
+                throw error;
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
     static async makeVisible(id, bookId){
         try {
             const sqlQuery = 'UPDATE Catalog SET isVisible = 1 WHERE id = ? AND bookId = ?';
@@ -130,7 +148,7 @@ class catalogDAO{
     }
     static async fetchInCatalog(){
         try {
-            const sqlQuery = 'SELECT imageUrl, Books.id as bookId, title,  fullName, descr, copies, loanCopies, isVisible, Catalog.id as catalogId FROM Books INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id  INNER JOIN Catalog on Books.id = Catalog.bookId WHERE Books.id IN (SELECT bookId FROM Catalog) ORDER BY isVisible, title';
+            const sqlQuery = 'SELECT imageUrl, Books.id as bookId, title, fullName, descr, copies, loanCopies, isVisible, Catalog.id as catalogId, summary FROM Books INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id  INNER JOIN Catalog on Books.id = Catalog.bookId WHERE Books.id IN (SELECT bookId FROM Catalog) ORDER BY isVisible, title';
             return db.query(sqlQuery)
             .then(res => {
                 return res;
