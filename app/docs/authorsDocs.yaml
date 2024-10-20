@@ -1,0 +1,37 @@
+tags:
+  - name: /api/authors
+    description: Rutas relacionadas con la gestión del recurso Authors
+
+/register:
+  post:
+    tags:
+      - /api/authors
+    description: Genera un nuevo recurso de tipo autor usando un id, un nombre y una nacionalidad.
+    summary: Busca y regresa un autor por su id.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - newId
+              - newFullname
+              - newNationality
+            properties:
+              newId:
+                type: string
+                description: Es un identificador único para un autor. Se recomienda usar el formato A000. No puede ser mayor a 15 caracteres.
+              newFullname:
+                type: string
+                description: Nuevo nombre completo. Puede consistir en solo nombre, nombre y apellido o cualquier formato elegido, siempre y cuando no supere los 100 caracteres en total. Espacios en blanco incluidos.
+              newNationality:
+                type: string
+                description: Es el nombre de la nacionalidad. Puede ser el formato deseado siempre y cuando no supere los 50 caracteres.
+    responses:
+      200:
+        description: El recurso se ha creado correctamente.
+      400:
+        description: Error en la solicitud. Puede deberse al manejo de los parametros.
+      500:
+        description: Error interno del servidor. Generalmente con la base de datos o una mala configuración.

@@ -1,0 +1,34 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bookscenterapi
+    ports:
+      - "5000:5000" # Asegurarse que el puerto del docker sea el mismo que la variable de entorno
+    environment:
+      - PORT=5000 # Asegurarse que sea el mismo que el puerto del docker
+      - HOST=localhost
+      - DB_HOST=mysql_db
+      - DB_USER=root
+      - DB_PASSWORD=1234 # Tu contraseña
+      - DB_NAME=booksCenter
+      - SECRET_KEY=test # Firma para autenticación
+    depends_on:
+      - mysql_db
+    
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234 # Configurar tu contraseña para la base de datos
+    ports:
+      - "3307:3306" # Localmente, la base de datos se expone en el puerto 3307
+    command: --lower_case_table_names=1
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./app/CREATEDB.sql:/docker-entrypoint-initdb.d/CREATEDB.sql
+    
+volumes:
+  mysql_data:
+    driver: local

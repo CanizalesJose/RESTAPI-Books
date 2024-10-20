@@ -1,0 +1,340 @@
+tags:
+  - name: Usuarios
+    description: Rutas relacionadas con el proceso de autenticación, validación de acceso y gestión de usuarios.
+
+/api/users/login/{username}:
+  post:
+    parameters:
+      - in: path
+        name: username
+        required: true
+        schema:
+          type: string
+        description: El nombre del usuario que esta generando el token
+    tags:
+      - Usuarios
+    summary: A partir de unas credenciales válidas de acceso, genera un token firmado con los datos del usuario. Expira en 8 horas.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - password
+            properties:
+              password:
+                type: string
+                description: Contraseña secreta de usuario, de preferencia usar una fuerte. Debe tener entre 1 y 100 caracteres. No hay requisitos especiales.
+    responses:
+      201:
+        description: Autenticación exitosa, se devuelve un token de autenticación.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: Token de autenticación. Esta firmado por el usuario que la generó y tiene una validez de 8 horas, una jornada laboral.
+                username:
+                  type: string
+                  description: Nombre del usuario que generó el token.
+                  example: usuario123
+                usertype:
+                  type: string
+                  description: Tipo de usuario autenticado, puede ser admin o client.
+                  example: admin
+      400:
+        description: Error en la solicitud. Puede referirse a un dato mal mandado.
+        content: 
+          application/json:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Credenciales incorrectas.
+      500:
+        description: Error interno del servidor o problema en la consulta SQL.
+
+/api/users/validToken:
+  post:
+    tags:
+      - Usuarios
+    summary: Ruta para verificar la validez de un token sin ninguna acción adicional.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
+    responses:
+      200:
+        description: El token es valido y sigue vigente para su uso en las rutas protegidas de la API
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nombre del usuario que generó el token en primer lugar
+                usertype:
+                  type: string
+                  descripcion: Tipo de usuario que generó el token en primer lugar. Limita el acceso a ciertas rutas. Puede ser admin o client.
+                iat:
+                  type: integer
+                  description: Unix timestamp del momento en que fue generado el token.
+                exp:
+                  type: integer
+                  description: Unix timestamp del momento en que expirará el token.
+      401:
+        description: El token no se encuentra en la petición, por lo que se rechazará su validez y se aconseja limpiar la memoria donde se almacene.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clearToken:
+                  type: boolean
+                  description: Recomendación de limpiar el token del cliente.
+      403:
+        description: El token enviado fue rechazado por el servidor y se recomienda su eliminación.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clearToken:
+                  type: boolean
+                  description: Recomendación de limpiar el token del cliente.
+
+
+/api/users/register/{username}:
+  post:
+    tags:
+      - Usuarios
+    summary: Ruta para crear nuevos usuarios, puede crear administradores
+    parameters:
+      - in: path
+        name: username
+        description: Nombre del usuario que se esta generando
+        schema:
+          type: string
+        required: true
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - password
+              - usertype
+              - contactNumber
+              - email
+            properties:
+              password:
+                type: string
+                description: Contraseña de usuario, no puede estar vacío y debe ser menor a 100 caracteres. No tiene requisitos especiales.
+              usertype:
+                type: string
+                description: Es el tipo de usuario, definirá los privilegios y acceso a rutas de la API, así como debería limitar su acceso a la aplicación. Solo puede ser admin o client.
+              contactNumber:
+                type: string
+                description: Número de contacto del usuario. Debe tener una longitud igual o menor a 12 caracteres, dejando libre el uso del formato 123-123-1234 o 1234567890.
+              email:
+                type: string
+                description: Correo electronico del usuario. Debe tener menos de 100 caracteres y el formato estándar de un correo.
+    responses:
+      201:
+        description: Nuevo usuario creado
+      400:
+        description: Error en la petición
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalle los motivos del fallo en la petición
+      500:
+        description: Error interno del servidor. Generalmente un error no definido.
+
+/api/users/registerClient/{username}:
+  post:
+    tags:
+      - Usuarios
+    summary: Ruga pública para dar de alta clientes nuevos
+    parameters:
+      - in: path
+        name: username
+        description: Nombre del cliente generado
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - password
+            properties:
+              password:
+                type: string
+                description: Contraseña de usuario, no puede estar vacío y debe ser menor a 100 caracteres. No tiene requisitos especiales.
+                example: securepassword123
+    responses:
+      200:
+        description: La petición se realizó con éxito y un nuevo recurso se ha creado con los parámetros enviados y el tipo de usuario cliente.
+      400:
+        description: Hubo un error en la petición, generalmente por error en la petición del cliente. Algún dato faltante o con formato equivocado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico donde se explica la causa del fallo.
+      500:
+        description: Hubo un error interno en el servidor. Generalmente con la base de datos o una mala configuración.
+
+/api/users/findAll:
+  get:
+    tags:
+      - Usuarios
+    summary: Ruta restringida que regresa todos los usuarios registrados.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de usuarios
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nombre de usuario que lo identifica
+                usertype:
+                  type: string
+                  description: Tipo de usuario y el alcance de sus privilegios
+      500:
+        description: Hubo un error interno en el servidor. Generalmente con la base de datos o una mala configuración.
+
+/api/users/update/{username}:
+  patch:
+    tags:
+      - Usuarios
+    summary: Solo administradores. Actualiza los datos de un usuario sin pedir credenciales del usuario modificado.
+    parameters:
+      - in: path
+        name: username
+        required: true
+        description: El nombre del usuario que se está actualizando. Este usuario no puede ser el mismo que firmó el token de autorización.
+        schema:
+          type: string
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - usertype
+              - contactNumber
+              - email
+            properties:
+              password:
+                type: string
+                description: Nueva contraseña que reemplazará a la antigüa. Dato opcional que si no se especifica, se mantendrá el valor anterior.
+              usertype:
+                type: string
+                description: El nuevo tipo de usuario del usuario. Puede ser admin o client.
+              contactNumber:
+                type: string
+                description: Un nuevo número de contacto. Debe tener el formato 1234567890 o 123-123-1234.
+              email:
+                type: string
+                description: Nuevo correo electronico, debe tener el formato estándar y no tener mas de 100 caracteres.
+    responses:
+      201:
+        description: El usuario se ha actualizado correctamente con todos los parametros enviados.
+      400:
+        description: Hubo un error con alguno de los parámetros
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico donde se explica la causa del fallo.
+      500:
+        description: Hubo un erorr interno en el servidor. Generalmente relacionado con la base de datos o una mala configuración.
+
+/api/users/delete:
+  delete:
+    tags:
+      - Usuarios
+    description: Ruta solo para administradores, permite eliminar un usuario en base a su username, no puede eliminar un usuario si no este tiene pedidos registrados a su nombre para preservar la integridad de los datos. Sin pedir credenciales.
+    summary: Solo administradores. Elimina un usuario, pero no si tiene pedidos.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la api a través de la ruta /login
+    requestBody:
+      require: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+            properties:
+              username:
+                type: string
+                description: Nombre de usuario, debe tener entre 0 y 15 caracteres. Debe existir en primer lugar.
+    responses:
+      200:
+        description: El usuario se ha eliminado correctamente
+      400:
+        description: Hubo un error con el parámetro, ya sea un mal formado, no fue mandado o la busqueda no arrojo resultados con ese parametro.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla los motivos del fallo y como solucionarlo.
+      500:
+        description: Ocurrión un error interno en el servidor. Generalmente con la base de datos o una mala configuración.
