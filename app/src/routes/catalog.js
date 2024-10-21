@@ -12,7 +12,7 @@ router.get('/fetchNotInCatalog', authenticateToken, authorizeRoles(['admin']), a
     }
 });
 
-router.get('/fetchCatalog', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchCatalog', async (req, res) => {
     try {
         printPath(req.path, req.method);
         return res.status(200).json(await catalogDAO.fetchInCatalog());
