@@ -1,8 +1,20 @@
 const {newError, genId} = require('../utils');
 const db = require('../connection/db');
-const bookDAO = require('./bookDAO');
 
 class catalogDAO{
+    static async find(bookId){
+        try {
+            const sqlQuery = 'SELECT bookId FROM Catalog WHERE bookId = ?';
+            return db.query(sqlQuery, [bookId])
+            .then(res => {
+                if (!res)
+                    throw newError(500, 'Error interno en la consulta');
+                return res;
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
     static async addBook(bookId, summary, isVisible){
         try {
             const sqlQuery = 'INSERT INTO Catalog (id, bookId, summary, isVisible) VALUES (?, ?, ?, ?)';
