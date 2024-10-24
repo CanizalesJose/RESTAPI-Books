@@ -22,6 +22,16 @@ router.get('/fetchCatalog', async (req, res) => {
     }
 });
 
+router.get('/fetchVisibleCatalog', async (req, res) => {
+    try {
+        printPath(req.path, req.method);
+        return res.status(200).json(await catalogDAO.fetchVisibleCatalog());
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
 router.post('/add/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
         printPath(req.path, req.method);
