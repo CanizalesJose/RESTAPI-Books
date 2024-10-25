@@ -186,6 +186,20 @@ class catalogDAO{
             throw error;
         }
     }
+    static async fetchTopLoans(){
+        try {
+            const sqlQuery = 'SELECT COUNT(bookId) AS count, bookId, imageUrl as cover from loanDetails INNER JOIN Books ON loanDetails.bookId = Books.id GROUP BY bookId ORDER BY count DESC LIMIT 5';
+            return db.query(sqlQuery)
+            .then(res => {
+                return res
+            })
+            .catch(error => {
+                throw newError(500, `Error en la consulta: ${error.message}`);
+            })
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = catalogDAO;
