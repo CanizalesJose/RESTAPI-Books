@@ -106,57 +106,7 @@ INSERT INTO Categories (id, descr) VALUES
 ('C015', 'Religion');
 
 -- Libros de Gabriel García Márquez
-INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category) VALUES
-('B002', 'El otoño del patriarca', '978-0307389730', 'A001', 'Vintage', 1975, 'C001'),
-('B003', 'El amor en los tiempos del cólera', '978-0307389730', 'A001', 'Vintage', 1985, 'C001'),
-
--- Libros de J.K. Rowling
-('B004', 'Harry Potter y la piedra filosofal', '978-0747532699', 'A002', 'Bloomsbury', 1997, 'C005'),
-('B005', 'Harry Potter y la cámara secreta', '978-0747538493', 'A002', 'Bloomsbury', 1998, 'C005'),
-('B006', 'Harry Potter y el prisionero de Azkaban', '978-0747542155', 'A002', 'Bloomsbury', 1999, 'C005'),
-
--- Libros de George Orwell
-('B007', '1984', '978-0451524935', 'A003', 'Harcourt', 1949, 'C001'),
-('B008', 'Rebelión en la granja', '978-0451526342', 'A003', 'Signet', 1945, 'C001'),
-
--- Libros de Haruki Murakami
-('B009', 'Norwegian Wood', '978-0375704024', 'A004', 'Vintage', 1987, 'C001'),
-('B010', 'Kafka en la orilla', '978-1400079278', 'A004', 'Alfred A. Knopf', 2002, 'C001'),
-('B011', '1Q84', '978-0307593310', 'A004', 'Harvill Secker', 2009, 'C001'),
-
--- Libros de Isabel Allende
-('B012', 'La casa de los espíritus', '978-0349100031', 'A005', 'Plaza & Janés', 1982, 'C001'),
-('B013', 'Eva Luna', '978-0393306718', 'A005', 'Penguin Books', 1987, 'C001'),
-('B014', 'Paula', '978-0060974997', 'A005', 'Harper Perennial', 1994, 'C001'),
-
--- Libros de Stephen King
-('B015', 'El resplandor', '978-0385121675', 'A006', 'Doubleday', 1977, 'C011'),
-('B016', 'It', '978-0452284290', 'A006', 'Viking Penguin', 1986, 'C011'),
-('B017', 'Misery', '978-0452264476', 'A006', 'Viking Penguin', 1987, 'C011'),
-
--- Libros de Jane Austen
-('B018', 'Orgullo y prejuicio', '978-1503290563', 'A007', 'CreateSpace', 1813, 'C009'),
-('B019', 'Sentido y sensibilidad', '978-1503298255', 'A007', 'CreateSpace', 1811, 'C009'),
-('B020', 'Emma', '978-1514644028', 'A007', 'CreateSpace', 1815, 'C009'),
-
--- Libros de Mark Twain
-('B021', 'Las aventuras de Tom Sawyer', '978-0486287401', 'A008', 'Dover Publications', 1876, 'C008'),
-('B022', 'Las aventuras de Huckleberry Finn', '978-0486286145', 'A008', 'Dover Publications', 1884, 'C008'),
-
--- Libros de Agatha Christie
-('B023', 'Asesinato en el Orient Express', '978-0062693662', 'A009', 'HarperCollins', 1934, 'C008'),
-('B024', 'Muerte en el Nilo', '978-0062073501', 'A009', 'HarperCollins', 1937, 'C008'),
-('B025', 'El asesinato de Roger Ackroyd', '978-0062073501', 'A009', 'HarperCollins', 1926, 'C008'),
-
--- Libros de F. Scott Fitzgerald
-('B026', 'El gran Gatsby', '978-0743273565', 'A010', 'Scribner', 1925, 'C001'),
-('B027', 'Suave es la noche', '978-0743273565', 'A010', 'Scribner', 1934, 'C001'),
-
--- Libros de Hermann Hesse
-('B028', 'Siddhartha', '978-0553208849', 'A011', 'New Directions', 1922, 'C001'),
-('B029', 'El lobo estepario', '978-0805210600', 'A011', 'Henry Holt and Co.', 1927, 'C001');
-
-INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, imageUrl) VALUES ('B001', 'Cien años de soledad', '978-0060883287', 'A001', 'Random House', 1967, 'C001', 'https://m.media-amazon.com/images/I/91TvVQS7loL._AC_UF1000,1000_QL80_.jpg');
+INSERT INTO Books (id, title, isbn, author, publisher, publishYear, category, imageUrl) VALUES ("B001", "Cien años de soledad", "978-0060883287", "A001", "Random House", 1967, "C001", "https://m.media-amazon.com/images/I/91TvVQS7loL._AC_UF1000,1000_QL80_.jpg"), ("B002", "El otoño del patriarca", "978-0307389730", "A001", "Vintage", 1975, "C001", "https://imagessl3.casadellibro.com/a/l/s5/13/9788497592413.webp"), ("B003", "El amor en los tiempos del cólera", "978-0307389730", "A001", "Vintage", 1985, "C001", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyNtOHlFQI6XGe8MZck5PMDhwEXpyf1odO9Q&s"), ("B004", "Harry Potter y la piedra filosofal", "978-0747532699", "A002", "Bloomsbury", 1997, "C005", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSABnJg_Jemi0qe5O_ZAwEmSrZ4wf_7g7Plag&s"), ("B005", "Harry Potter y la cámara secreta", "978-0747538493", "A002", "Bloomsbury", 1998, "C005", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpMmQXiX5-Iar-hWjkGRiC2hri_y8J_qyKoQ&s"), ("B006", "Harry Potter y el prisionero de Azkaban", "978-0747542155", "A002", "Bloomsbury", 1999, "C005", "https://image.cdn0.buscalibre.com/5b5ad0261dc86127688b4568.__RS360x360__.jpg"), ("B007", "1984", "978-0451524935", "A003", "Harcourt", 1949, "C001", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRASKlNdsq5m9x7q7I1TbwTjn9DqxBXZ1x3vw&s"), ("B008", "Rebelión en la granja", "978-0451526342", "A003", "Signet", 1945, "C001", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBfKLJzudyfyJYk_EihMK3twBUZain4SztIQ&s"), ("B009", "Norwegian Wood", "978-0375704024", "A004", "Vintage", 1987, "C001", "https://pendulo.com/imagenes/7503013/750301392573.GIF"), ("B010", "Kafka en la orilla", "978-1400079278", "A004", "Alfred A. Knopf", 2002, "C001", "https://www.planetadelibros.com.mx/usuaris/libros/fotos/157/m_libros/156155_kafka-en-la-orilla_9788483835241.jpg"), ("B011", "1Q84", "978-0307593310", "A004", "Harvill Secker", 2009, "C001", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRg8YxLaKZEHM8yr5wr-L-0BB886TIePDPH0Q&s"), ("B012", "La casa de los espíritus", "978-0349100031", "A005", "Plaza & Janés", 1982, "C001", "https://images.cdn3.buscalibre.com/fit-in/360x360/f4/91/f491e0c411dc2c7e35319ab466885bbc.jpg"), ("B013", "Eva Luna", "978-0393306718", "A005", "Penguin Books", 1987, "C001", "https://www.u-topicas.com/imagenes_grandes/9786073/978607383202.JPG"), ("B014", "Paula", "978-0060974997", "A005", "Harper Perennial", 1994, "C001", "https://images.cdn2.buscalibre.com/fit-in/360x360/13/43/1343b49952cf24c5f3ae17b86f381531.jpg"), ("B015", "El resplandor", "978-0385121675", "A006", "Doubleday", 1977, "C011", "https://resources.sanborns.com.mx/imagenes-sanborns-ii/1200/9786073813990.jpg?scale=500&qlty=75"), ("B016", "It", "978-0452284290", "A006", "Viking Penguin", 1986, "C011", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B017", "Misery", "978-0452264476", "A006", "Viking Penguin", 1987, "C011", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B018", "Orgullo y prejuicio", "978-1503290563", "A007", "CreateSpace", 1813, "C009", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B019", "Sentido y sensibilidad", "978-1503298255", "A007", "CreateSpace", 1811, "C009", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B020", "Emma", "978-1514644028", "A007", "CreateSpace", 1815, "C009", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B021", "Las aventuras de Tom Sawyer", "978-0486287401", "A008", "Dover Publications", 1876, "C008", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B022", "Las aventuras de Huckleberry Finn", "978-0486286145", "A008", "Dover Publications", 1884, "C008", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B023", "Asesinato en el Orient Express", "978-0062693662", "A009", "HarperCollins", 1934, "C008", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B024", "Muerte en el Nilo", "978-0062073501", "A009", "HarperCollins", 1937, "C008", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B025", "El asesinato de Roger Ackroyd", "978-0062073501", "A009", "HarperCollins", 1926, "C008", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B026", "El gran Gatsby", "978-0743273565", "A010", "Scribner", 1925, "C001", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B027", "Suave es la noche", "978-0743273565", "A010", "Scribner", 1934, "C001", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B028", "Siddhartha", "978-0553208849", "A011", "New Directions", 1922, "C001", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s"), ("B029", "El lobo estepario", "978-0805210600", "A011", "Henry Holt and Co.", 1927, "C001", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58P55blSKZmf2_LdBoU7jETl6OiB2sjYy9A&s");
 
 INSERT INTO Catalog (id, bookId, summary) VALUES ('QWERTYUIOPASDF', 'B003', 'García Márquez traza la historia de un amor que no ha sido correspondido por medio siglo. Aunque nunca parece estar propiamente contenido, el amor fluye a traves de la novela de mil maneras: alegre, melancólico, enriquecedor, siempre sorprendente.');
 INSERT INTO Catalog (id, bookId, summary) VALUES ('ASDFGHJKLZXCVBN', 'B006', 'La trama del libro describe que un peligroso asesino, Sirius Black, se escapó de Azkaban, la prisión de los magos, y al parecer está dispuesto a encontrar y matar a Harry. Se sabe también que es la primera persona en escapar de la prisión de magos y nadie sabe cómo lo hizo.');
