@@ -15,7 +15,7 @@ class userDAO {
     }
     // Regresa un arreglo de diccionarios si encuentra un usuario en base a un nombre
     static async findUser(username){
-        const sqlQuery = 'SELECT username, userpassword, usertype, contactNumber, email FROM Users WHERE username = ?;'
+        const sqlQuery = 'SELECT username, userpassword, usertype, contactNumber, email, penalized FROM Users WHERE username = ?;'
         try {
             if (!username)
                 throw newError(400, "Falta parametro username");
