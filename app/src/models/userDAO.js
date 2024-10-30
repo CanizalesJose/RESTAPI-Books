@@ -1,5 +1,6 @@
 const db = require('../connection/db');
 const {encryptText, newError} = require('../utils');
+const bcrypt = require('bcrypt');
 
 class userDAO {
     static async findAllUsers(){
@@ -108,6 +109,44 @@ class userDAO {
             throw error;
         }
     }
+    // Actualiza un usuario sin usar privilegios de administrador
+    static async updateUserClient(username, contactNumber, email, password, currentPassword){
+        const sqlQuery1 = 'UPDATE Users SET userpassword = ?, contactNumber = ?, email = ? WHERE username = ?';
+        const sqlQuery2 = 'UPDATE Users SET contactNumber = ?, email = ? WHERE username = ?';
+        try {
+            var changePassword = false;
+            // Revisar parametro username
+            if (!username)
+                throw newError(400, "Falta el parametro username");
+            if (!currentPassword)
+                throw newError(400, "Falta la contraseña actual");
+            if (password){
+                if (password.length == 0 || password.length > 100)
+                    throw newError(400, 'La contraseña no cumple los requisitos de longitud');
+                await this.loginAux(username, currentPassword)
+                changePassword = true;
+                password = encryptText(password);
+            }
+            if (!contactNumber)
+                throw newError(400, 'Falta el parametro contactNumber');
+            if (contactNumber.length == 0 || contactNumber.length > 12)
+                throw newError(400, 'El numero de contacto no cumple los requisitos de longitud');
+            if (!/^[0-9]{10}|[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(contactNumber))
+                throw newError(400, 'El numero de contacto no cumple con ninguno de los formatos');
+            if (!email)
+                throw newError(400, 'Falta el parametro email');
+            if (email.length == 0 || email.length > 100)
+                throw newError(400, 'El correo no cumple los requisitos de longitud');
+            if (!/^[a-zA-Z0-9]+\@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/.test(email))
+                throw newError(400, 'El correo no cumple el formato estándar.');
+            if (changePassword)
+                await db.query(sqlQuery1, [password, contactNumber, email, username]);
+            if (!changePassword)
+                await db.query(sqlQuery2, [contactNumber, email, username]);
+        } catch (error) {
+            throw error;
+        }
+    }
     // Elimina un usuario que exista, regresa 1 si hubo error, 0 si no
     static async deleteUser(deletedUser){
         const mainSqlQuery = 'DELETE FROM Users WHERE username = ?';
@@ -120,6 +159,26 @@ class userDAO {
             if (exists.length == 0)
                 throw newError(400, "El registro no existe");
             await db.query(mainSqlQuery, [deletedUser]);
+        } catch (error) {
+            throw error;
+        }
+    }
+    // Comprueba las credenciales de un usuario
+    static async loginAux(username, password){
+        try {
+            if (!username)
+                throw newError(400, 'Falta el parametro username');
+            if (!password)
+                throw newError(400, 'Falta el parametro password');
+            let user = await this.findUser(username);
+            if (!user)
+                throw newError(500, 'Error interno en la consulta');
+            if (user.length == 0)
+                throw newError(400, 'Credenciales invalidas');
+            user = user[0];
+            if (!bcrypt.compareSync(password, user.userpassword))
+                throw newError(400, 'Credenciales invalidas');
+            return true;
         } catch (error) {
             throw error;
         }

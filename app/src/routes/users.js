@@ -128,6 +128,24 @@ router.patch('/update/:username', authenticateToken, authorizeRoles(['admin']), 
         return res.status(statusCode).json({message: error.message});
     }
 });
+// Ruta pública para modificar datos de usuario
+router.patch('/updateCLient', authenticateToken, async (req, res) => {
+    printPath(req.path, req.method);
+    try {
+        const username = req.user.username;
+        const {contactNumber, email, password, currentPassword} = req.body;
+        await userDAO.updateUserClient(username, contactNumber, email, password, currentPassword);
+        return res.status(200).json({message: 'Usuario actualizado correctamente'});
+    } catch (error) {
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
 // Ruta protegida para eliminar usuarios
     router.delete('/delete/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.path, req.method);
