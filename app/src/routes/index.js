@@ -24,7 +24,7 @@ router.use('/catalog', catalog);
 // Crear rutas del sistema, propias de la base de la API
 router.get('/', async function (req, res) {
   printPath(req.path, req.method);
-  return res.status(200).json({message: 'Functionando'});
+  return res.status(200).json({message: 'Working'});
 });
 
 router.get('/');
