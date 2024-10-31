@@ -4,7 +4,7 @@ const catalogDAO = require('../models/catalogDAO');
 
 router.get('/fetchNotInCatalog', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         return res.status(200).json(await catalogDAO.fetchNotInCatalog());
     } catch (error) {
         const statusCode = error.statusCode || 500;
@@ -14,7 +14,7 @@ router.get('/fetchNotInCatalog', authenticateToken, authorizeRoles(['admin']), a
 
 router.get('/fetchCatalog', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         return res.status(200).json(await catalogDAO.fetchInCatalog());
     } catch (error) {
         const statusCode = error.statusCode || 500;
@@ -24,7 +24,7 @@ router.get('/fetchCatalog', authenticateToken, authorizeRoles(['admin']), async 
 
 router.get('/fetchVisibleCatalog', async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         return res.status(200).json(await catalogDAO.fetchVisibleCatalog());
     } catch (error) {
         const statusCode = error.statusCode || 500;
@@ -34,7 +34,7 @@ router.get('/fetchVisibleCatalog', async (req, res) => {
 
 router.get('/fetchTopLoans', async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         return res.status(200).json(await catalogDAO.fetchTopLoans());
     } catch (error) {
         const statusCode = error.statusCode || 500;
@@ -44,7 +44,7 @@ router.get('/fetchTopLoans', async (req, res) => {
 
 router.get('/fetchByTitle/:title', async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const title = req.params.title;
         return res.status(200).json(await catalogDAO.fetchByTitle(title));
     } catch (error) {
@@ -55,7 +55,7 @@ router.get('/fetchByTitle/:title', async (req, res) => {
 
 router.post('/add/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const bookId = req.params.bookId;
         const {summary, isVisible} = req.body;
         await catalogDAO.addBook(bookId, summary, isVisible);
@@ -68,7 +68,7 @@ router.post('/add/:bookId', authenticateToken, authorizeRoles(['admin']), async 
 
 router.patch('/editSummary/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const id = req.params.id;
         const bookId = req.params.bookId;
         const { summary } = req.body;
@@ -83,7 +83,7 @@ router.patch('/editSummary/:id/:bookId', authenticateToken, authorizeRoles(['adm
 
 router.delete('/remove/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const id = req.params.id;
         const bookId = req.params.bookId;
         return res.status(200).json({message: await catalogDAO.remove(id, bookId)});
@@ -95,7 +95,7 @@ router.delete('/remove/:id/:bookId', authenticateToken, authorizeRoles(['admin']
 
 router.patch('/makeVisible/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const id = req.params.id;
         const bookId = req.params.bookId;
         await catalogDAO.makeVisible(id, bookId);
@@ -108,7 +108,7 @@ router.patch('/makeVisible/:id/:bookId', authenticateToken, authorizeRoles(['adm
 
 router.patch('/makeNotVisible/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const id = req.params.id;
         const bookId = req.params.bookId;
         await catalogDAO.makeNotVisible(id, bookId);

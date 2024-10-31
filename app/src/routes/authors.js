@@ -3,7 +3,7 @@ const authorDAO = require('../models/authorDAO');
 const { authenticateToken, authorizeRoles, printPath } = require('../utils');
 // Ruta protegida para buscar un autor
 router.get('/find', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     const {id} = req.body;
     try {
         const result = await authorDAO.find(id);
@@ -20,7 +20,7 @@ router.get('/find', authenticateToken, authorizeRoles(['admin']), async (req, re
 });
 // Ruta protegida para regresar todos los autores
 router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const results = await authorDAO.findAll();
         return res.status(200).json(results);
@@ -36,7 +36,7 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
 });
 // Ruta protegida para registrar un nuevo autor
 router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     const {newFullname, newNationality} = req.body;
     try {
         let newAuthor = await authorDAO.register(newFullname, newNationality);
@@ -56,7 +56,7 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
 });
 // Ruta para actualizar un registro
 router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     const id = req.params.id;
     const {newFullname, newNationality} = req.body;
     try {
@@ -74,7 +74,7 @@ router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async 
 });
 // Ruta para eliminar un registro
 router.delete('/delete/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     const id = req.params.id;
     try {
         await authorDAO.delete(id);

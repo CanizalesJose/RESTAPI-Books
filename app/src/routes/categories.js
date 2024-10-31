@@ -3,7 +3,7 @@ const categoryDAO = require('../models/categoryDAO');
 const { authenticateToken, authorizeRoles, printPath } = require('../utils');
 // Ruta protegida que regresa todas las categorias registradas, regresa [] si no encuentra nada o hay error en la consulta
 router.get('/find/All', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const categories = await categoryDAO.findAll();
         return res.status(200).json(categories);
@@ -19,7 +19,7 @@ router.get('/find/All', authenticateToken, authorizeRoles(['admin']), async (req
 });
 // Ruta protegida para generar una nueva categoría
 router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const {descr} = req.body;
         let newCategory = await categoryDAO.register(descr);
@@ -39,7 +39,7 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
 });
 // Ruta protegida para actualizar una categoria
 router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const id = req.params.id;
         const {descr} = req.body;
@@ -57,7 +57,7 @@ router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async 
 });
 // Ruta protegida para eliminar una categoría
 router.delete('/delete/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const id = req.params.id;
         await categoryDAO.delete(id);

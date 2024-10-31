@@ -4,7 +4,7 @@ const { authenticateToken, authorizeRoles, printPath } = require('../utils');
 
 router.post('/new', authenticateToken, async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const { booksList } = req.body;
         const username = req.user.username;
         await loanDAO.newLoan(booksList, username);
@@ -22,7 +22,7 @@ router.post('/new', authenticateToken, async (req, res) => {
 
 router.get('/fetchByID/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const id = req.params.id;
         return res.status(200).json(await loanDAO.fetchById(id));
     } catch (error) {
@@ -33,7 +33,7 @@ router.get('/fetchByID/:id', authenticateToken, authorizeRoles(['admin']), async
 
 router.get('/fetchByUser', authenticateToken, async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const username = req.user.username;
         return res.status(200).json(await loanDAO.fetchByUser(username));
     } catch (error) {
@@ -44,7 +44,7 @@ router.get('/fetchByUser', authenticateToken, async (req, res) => {
 
 router.get('/fetchReturned', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         return res.status(200).json(await loanDAO.fetchReturned());
     } catch (error) {
         const statusCode = error.statusCode || 500;
@@ -54,7 +54,7 @@ router.get('/fetchReturned', authenticateToken, authorizeRoles(['admin']), async
 
 router.get('/fetchPending', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         return res.status(200).json(await loanDAO.fetchPending());
     } catch (error) {
         const statusCode = error.statusCode || 500;
@@ -64,7 +64,7 @@ router.get('/fetchPending', authenticateToken, authorizeRoles(['admin']), async 
 
 router.get('/fetchByUser/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const username = req.params.username;
         return res.status(200).json(await loanDAO.findFromUser(username));
     } catch (error) {
@@ -75,7 +75,7 @@ router.get('/fetchByUser/:username', authenticateToken, authorizeRoles(['admin']
 
 router.patch('/update/:loanId/:bookId/:newStatus', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
-        printPath(req.path, req.method);
+        printPath(req.originalUrl, req.method);
         const loanId = req.params.loanId;
         const bookId = req.params.bookId;
         const newStatus = req.params.newStatus;
