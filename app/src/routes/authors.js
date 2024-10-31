@@ -34,6 +34,16 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
         return res.status(statusCode).json({message: error.message});
     }
 });
+router.get('/findByName/:name', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    printPath(req.originalUrl, req.method);
+    try {
+        const name = req.params.name;
+        return res.status(200).json(await authorDAO.findByName(name));
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
 // Ruta protegida para registrar un nuevo autor
 router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.originalUrl, req.method);
