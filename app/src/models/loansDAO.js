@@ -181,6 +181,16 @@ class loansDAO{
             throw newError(500, `Error interno en la consulta: ${error.message}`);
         });
     }
+    static async fetchByUser(username) {
+        const sqlQuery = 'SELECT Loans.id AS loanId, DATE_FORMAT(Loans.returnDate, "%d-%m-%Y") as returnDate, loanDetails.bookId AS bookId, Books.title AS title, Categories.descr AS category, Authors.fullName AS author, Loans.username AS user, Books.imageUrl AS cover, loanDetails.returned as returned FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanId INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Categories ON Books.category = Categories.id INNER JOIN Authors ON Books.author = Authors.id WHERE username = ? ORDER BY returned';
+        return db.query(sqlQuery, [username])
+        .then(res => {
+            return res;
+        })
+        .catch(error => {
+            throw newError(500, `Error interno en la consulta: ${error.message}`);
+        });;
+    }
 }
 
 module.exports = loansDAO;

@@ -31,6 +31,17 @@ router.get('/fetchByID/:id', authenticateToken, authorizeRoles(['admin']), async
     }
 });
 
+router.get('/fetchByUser', authenticateToken, async (req, res) => {
+    try {
+        printPath(req.path, req.method);
+        const username = req.user.username;
+        return res.status(200).json(await loanDAO.fetchByUser(username));
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
 router.get('/fetchReturned', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     try {
         printPath(req.path, req.method);
