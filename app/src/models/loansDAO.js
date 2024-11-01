@@ -1,6 +1,7 @@
 const db = require('../connection/db');
 const bookDAO = require('./bookDAO');
 const userDAO = require('./userDAO');
+const catalogDAO = require('./catalogDAO');
 const {newError, genId, isJSON} = require('../utils')
 
 class loansDAO{
@@ -26,15 +27,14 @@ class loansDAO{
             return res[0];
         });
     }
-    // El cliente manda la fecha en que pidió los libros y la lista con los id de los libros pedidos
-    // Los libros se regresan una semana despues como máximo
-    // El id del prestamo se genera dinamicamente
+    // El cliente manda una lista de los ids de los libros que quiere pedir
     static async newLoan(booksList, username){
         try{
             // Generar fecha actual
             var loanDate = new Date();
             // Agregar 7 días a la fecha actual
             var returnDate = new Date(loanDate.getTime()+7*24*60*60*1000);
+            // Convertir al formato YYYY/MM/dd
             loanDate = loanDate.toISOString().split('T')[0];
             returnDate = returnDate.toISOString().split('T')[0];
             
@@ -48,6 +48,7 @@ class loansDAO{
             if (booksList.length == 0)
                 throw newError(400, "La lista de libros no puede estar vacía");
             booksList = new Set(booksList);
+            
 
             if (!username)
                 throw newError(400, "Falta el parametro username");
@@ -67,13 +68,21 @@ class loansDAO{
             } while (!pass);
             // Comprueba que todos los libros esten en base de datos
             result = null;
-            for (let i = 0; i < booksList.length; i++) {
-                const bookId = booksList[i];
+            for (const bookId of booksList) {
                 result = await bookDAO.find(bookId);
                 if (!result)
                     throw newError(500, "Error interno en la consulta");
                 if (result.length == 0)
                     throw newError(400, `El libro ${bookId} no existe`);
+            }
+            // Comprueba que el libro este en catalogo
+            result = null;
+            for (const bookId of booksList) {
+                result = await catalogDAO.find(bookId);
+                if (!result)
+                    throw newError(500, 'Error interno en la consulta');
+                if (result.length == 0)
+                    throw newError(400, `El libro ${bookId} no se encuentra en catalogo`);
             }
             // Comprueba que el usuario exista
             result = null;
@@ -171,6 +180,16 @@ class loansDAO{
         .catch(error => {
             throw newError(500, `Error interno en la consulta: ${error.message}`);
         });
+    }
+    static async fetchByUser(username) {
+        const sqlQuery = 'SELECT Loans.id AS loanId, DATE_FORMAT(Loans.returnDate, "%d-%m-%Y") as returnDate, loanDetails.bookId AS bookId, Books.title AS title, Categories.descr AS category, Authors.fullName AS author, Loans.username AS user, Books.imageUrl AS cover, loanDetails.returned as returned FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanId INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Categories ON Books.category = Categories.id INNER JOIN Authors ON Books.author = Authors.id WHERE username = ? ORDER BY returned';
+        return db.query(sqlQuery, [username])
+        .then(res => {
+            return res;
+        })
+        .catch(error => {
+            throw newError(500, `Error interno en la consulta: ${error.message}`);
+        });;
     }
 }
 

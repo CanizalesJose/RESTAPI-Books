@@ -30,6 +30,23 @@ class authorModel{
             throw error;
         }
     }
+    static async findByName(name){
+        const sqlQuery = 'SELECT id, fullName, nationality FROM Authors WHERE fullName LIKE ?';
+        try {
+            if (!name)
+                throw newError(400, 'Falta el parametro name');
+            name = `%${name}%`
+            return await db.query(sqlQuery, [name])
+            .then(res => {
+                return res;
+            })
+            .catch(error => {
+                throw newError(500, `Error interno en la consulta: ${error.message}`);
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
     // Registra un usuario, lanza error si falla
     static async register(newFullname=null, newNationality=null){
         const mainSqlQuery = 'INSERT Authors(id, fullname, nationality) VALUES (?, ?, ?)';

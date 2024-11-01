@@ -3,7 +3,7 @@ const bookDAO = require('../models/bookDAO');
 const {authenticateToken, authorizeRoles, printPath} = require('../utils');
 
 router.get('/find/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const id = req.params.id;
         const book = await bookDAO.find(id);
@@ -19,7 +19,7 @@ router.get('/find/:id', authenticateToken, authorizeRoles(['admin']), async (req
 })
 
 router.get('/findAll', async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const allBooks = await bookDAO.findAll();
         return res.status(200).json(allBooks);
@@ -31,8 +31,8 @@ router.get('/findAll', async (req, res) => {
     }
 });
 
-router.get('/find/title/:title', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+router.get('/findByTitle/:title', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    printPath(req.originalUrl, req.method);
     try {
         const title = req.params.title;
         const results = await bookDAO.findTitle(title);
@@ -49,7 +49,7 @@ router.get('/find/title/:title', authenticateToken, authorizeRoles(['admin']), a
 });
 
 router.post('/register', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try{
         const {title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
         const newBook = await bookDAO.register(title, isbn, author, publisher, publishYear, category, copies, imageUrl);
@@ -66,7 +66,7 @@ router.post('/register', authenticateToken, authorizeRoles(['admin']), async (re
 });
 
 router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try{
         const id = req.params.id;
         const {title, isbn, author, publisher, publishYear, category, copies, imageUrl} = req.body;
@@ -84,7 +84,7 @@ router.patch('/update/:id', authenticateToken, authorizeRoles(['admin']), async 
 });
 
 router.delete('/delete/:id', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const id = req.params.id;
         await bookDAO.delete(id);

@@ -6,7 +6,7 @@ const { authenticateToken, authorizeRoles, printPath, newError } = require('../u
 
 // Recibe en el body un username y password, regresa 201 y el token generado si el usuario existe
 router.post('/login/:username', async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const username = req.params.username;
         const {password} = req.body;
@@ -31,16 +31,16 @@ router.post('/login/:username', async (req, res) => {
 });
 // Confirma que un token siga en funcionamiento
 router.get('/validToken', authenticateToken, async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     return res.status(200).json({user: req.user});
 });
 router.get('/validAdmin', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     return res.sendStatus(200);
 });
 // Recibe en el body un usuario y contraseña en texto plano
 router.post('/register/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const username = req.params.username;
         const {password, usertype, contactNumber, email} = req.body;
@@ -58,7 +58,7 @@ router.post('/register/:username', authenticateToken, authorizeRoles(['admin']),
 });
 // Ruta pública para que los clientes se registren a si mismos
 router.post('/registerClient/:username', async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const username = req.params.username;
         const {password, contactNumber, email} = req.body;
@@ -74,9 +74,27 @@ router.post('/registerClient/:username', async (req, res) => {
         return res.status(statusCode).json({message: error.message});
     }
 });
+router.get('/findMe', authenticateToken, async (req, res) => {
+    printPath(req.originalUrl, req.method);
+    try {
+        const username = req.user.username;
+        var user = await userDAO.findUser(username);
+        user = user[0];
+        user.userpassword = null;
+        return res.status(200).json({user: user});
+    } catch (error) {
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
 // Ruta protegida, regresa todos los usuarios autenticados
 router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const users = await userDAO.findAllUsers();
         return res.status(200).json(users); 
@@ -92,7 +110,7 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
 });
 // Ruta protegida para modificar usuarios
 router.patch('/update/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) =>{
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const username = req.params.username;
         const {password, usertype, contactNumber, email} = req.body;
@@ -110,9 +128,27 @@ router.patch('/update/:username', authenticateToken, authorizeRoles(['admin']), 
         return res.status(statusCode).json({message: error.message});
     }
 });
+// Ruta pública para modificar datos de usuario
+router.patch('/updateCLient', authenticateToken, async (req, res) => {
+    printPath(req.originalUrl, req.method);
+    try {
+        const username = req.user.username;
+        const {contactNumber, email, password, currentPassword} = req.body;
+        await userDAO.updateUserClient(username, contactNumber, email, password, currentPassword);
+        return res.status(200).json({message: 'Usuario actualizado correctamente'});
+    } catch (error) {
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
 // Ruta protegida para eliminar usuarios
     router.delete('/delete/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
-    printPath(req.path, req.method);
+    printPath(req.originalUrl, req.method);
     try {
         const username = req.params.username;
         if (req.user.username == username)

@@ -31,6 +31,24 @@ class categoryDAO{
             throw error;
         }
     }
+    // Busca por descripción
+    static async findByDescr(descr){
+        const sqlQuery = 'SELECT id, descr FROM Categories WHERE descr LIKE ?';
+        try {
+            if (!descr)
+                throw newError(400, 'Falta el parametro descr');
+            descr = `%${descr}%`
+            return await db.query(sqlQuery, [descr])
+            .then(res => {
+                return res;
+            })
+            .catch(error => {
+                throw newError(500, `Error interno en la consulta: ${error.message}`);
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
     // Crea una categoria, regresa error si falla, regresa 0 si no
     static async register(descr){
         const mainSqlQuery = 'INSERT Categories(id, descr) VALUES (?, ?)';

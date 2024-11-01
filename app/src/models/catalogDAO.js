@@ -1,8 +1,20 @@
 const {newError, genId} = require('../utils');
 const db = require('../connection/db');
-const bookDAO = require('./bookDAO');
 
 class catalogDAO{
+    static async find(bookId){
+        try {
+            const sqlQuery = 'SELECT bookId FROM Catalog WHERE bookId = ?';
+            return db.query(sqlQuery, [bookId])
+            .then(res => {
+                if (!res)
+                    throw newError(500, 'Error interno en la consulta');
+                return res;
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
     static async addBook(bookId, summary, isVisible){
         try {
             const sqlQuery = 'INSERT INTO Catalog (id, bookId, summary, isVisible) VALUES (?, ?, ?, ?)';
@@ -155,6 +167,51 @@ class catalogDAO{
             })
             .catch(error => {
                 throw newError(500, `Error en la consulta: ${error.message}`);
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
+    static async fetchVisibleCatalog(){
+        try {
+            const sqlQuery = 'SELECT imageUrl, Books.id as bookId, title, fullName, descr, copies, loanCopies, isVisible, Catalog.id as catalogId, summary FROM Books INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id  INNER JOIN Catalog on Books.id = Catalog.bookId WHERE Catalog.isVisible = 1 AND Books.id IN (SELECT bookId FROM Catalog) ORDER BY isVisible, title';
+            return db.query(sqlQuery)
+            .then(res => {
+                return res;
+            })
+            .catch(error => {
+                throw newError(500, `Error en la consulta: ${error.message}`);
+            })
+        } catch (error) {
+            throw error;
+        }
+    }
+    static async fetchTopLoans(){
+        try {
+            const sqlQuery = 'SELECT COUNT(bookId) AS count, bookId, imageUrl as cover from loanDetails INNER JOIN Books ON loanDetails.bookId = Books.id GROUP BY bookId ORDER BY count DESC LIMIT 5';
+            return db.query(sqlQuery)
+            .then(res => {
+                return res
+            })
+            .catch(error => {
+                throw newError(500, `Error en la consulta: ${error.message}`);
+            })
+        } catch (error) {
+            throw error;
+        }
+    }
+    static async fetchByTitle(title){
+        try {
+            const sqlQuery = 'SELECT imageUrl, Books.id as bookId, title, fullName, descr, copies, loanCopies, isVisible, Catalog.id as catalogId, summary FROM Books INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id  INNER JOIN Catalog on Books.id = Catalog.bookId WHERE Catalog.isVisible = 1 AND Books.id IN (SELECT bookId FROM Catalog) AND Books.title LIKE ? ORDER BY isVisible, title';
+            if (!title)
+                throw newError(400, 'Falta el parametro title');
+            title = `%${title}%`;
+            return db.query(sqlQuery, [title])
+            .then(res => {
+                return res
+            })
+            .catch(error => {
+                throw newError(500, `Error en la consulta: ${error.message}`)
             });
         } catch (error) {
             throw error;
