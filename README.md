@@ -73,6 +73,13 @@ docker-compose up --build
 
 Este comando debería iniciar los procesos necesarios para crear las imágenes de la base de datos y la propia aplicación.
 
+Si se realiza cualquier cambio en el proyecto, especialmente a la base de datos a través del script `CREATEDB.sql`, se va a necesitar volver a crear las imagenes para ambos contenedores. Para ello se ejecutan los comandos:
+
+```sh
+docker-compose down --volumes --remove-orphans
+docker rmi mysql restapi-books-api
+```
+
 
 ### Pruebas con CURL
 CURL es una herramienta que nos permite realizar peticiones HTTP desde una terminal. Viene como parte de la utilería básica de Linux y Windows.
