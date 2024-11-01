@@ -22,6 +22,28 @@ router.get('/fetchCatalog', authenticateToken, authorizeRoles(['admin']), async 
     }
 });
 
+router.get('/fetchByTitleInCatalog/:title', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    try {
+        printPath(req.originalUrl, req.method);
+        const title = req.params.title;
+        return res.status(200).json(await catalogDAO.fetchByTitleInCatalog(title));
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
+router.get('/fetchByTitleOffCatalog/:title', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    try {
+        printPath(req.originalUrl, req.method);
+        const title = req.params.title;
+        return res.status(200).json(await catalogDAO.fetchByTitleOffCatalog(title));
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
 router.get('/fetchVisibleCatalog', async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);

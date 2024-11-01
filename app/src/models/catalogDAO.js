@@ -172,6 +172,36 @@ class catalogDAO{
             throw error;
         }
     }
+    static async fetchByTitleInCatalog(title){
+        try {
+            const sqlQuery = 'SELECT imageUrl, Books.id as bookId, title, fullName, descr, copies, loanCopies, isVisible, Catalog.id as catalogId, summary FROM Books INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id  INNER JOIN Catalog on Books.id = Catalog.bookId WHERE Books.id IN (SELECT bookId FROM Catalog) AND title LIKE ? ORDER BY isVisible, title';
+            title = `%${title}%`;
+            return db.query(sqlQuery, [title])
+            .then(res => {
+                return res;
+            })
+            .catch(error => {
+                throw newError(500, `Error en la consulta: ${error.message}`);
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
+    static async fetchByTitleOffCatalog(title){
+        try {
+            const sqlQuery = 'SELECT imageUrl, Books.id as bookId, title,  fullName, descr, copies, loanCopies FROM Books INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id  WHERE Books.id NOT IN (SELECT bookId FROM Catalog) AND title LIKE ?';
+            title = `%${title}%`;
+            return db.query(sqlQuery, [title])
+            .then(res => {
+                return res;
+            })
+            .catch(error => {
+                throw newError(500, `Error en la consulta: ${error.message}`);
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
     static async fetchVisibleCatalog(){
         try {
             const sqlQuery = 'SELECT imageUrl, Books.id as bookId, title, fullName, descr, copies, loanCopies, isVisible, Catalog.id as catalogId, summary FROM Books INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id  INNER JOIN Catalog on Books.id = Catalog.bookId WHERE Catalog.isVisible = 1 AND Books.id IN (SELECT bookId FROM Catalog) ORDER BY isVisible, title';
