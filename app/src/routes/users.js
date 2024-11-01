@@ -74,7 +74,7 @@ router.post('/registerClient/:username', async (req, res) => {
         return res.status(statusCode).json({message: error.message});
     }
 });
-router.get('/find/me', authenticateToken, async (req, res) => {
+router.get('/findMe', authenticateToken, async (req, res) => {
     printPath(req.originalUrl, req.method);
     try {
         const username = req.user.username;

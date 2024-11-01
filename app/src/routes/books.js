@@ -31,7 +31,7 @@ router.get('/findAll', async (req, res) => {
     }
 });
 
-router.get('/find/title/:title', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/findByTitle/:title', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.originalUrl, req.method);
     try {
         const title = req.params.title;

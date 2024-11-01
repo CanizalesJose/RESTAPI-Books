@@ -83,11 +83,4 @@ Options:
 - `-x <METHOD>:` permite envíar una solicitud usando el método especificado, POST, GET, PATCH o DELETE.
 
 #### Pendientes
-- Aplicar inserts en DAO prestamos: newLoan
-- DAO para prestamos
-- Endpoints de prestamos
-- Documentar endpoints de autores
-- Documentar endpoints de usuarios
-- Documentar endpoints de categorias
-- Documentar endpoints de libros
-- Documentar endpoints de libros
+- Documentación de endpoints
