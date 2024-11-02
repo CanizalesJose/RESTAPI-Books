@@ -137,18 +137,21 @@ class loansDAO{
     }
     // Regresa el ID de los prestamos que estan completamente regresados
     static async fetchReturned(){
-        const sqlQuery = 'select loans.id as id, loans.username as username, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate from loans join loandetails on loans.id = loandetails.loanid group by loans.id having count(*) = sum(loandetails.returned) order by date';
+        const sqlQuery = 'SELECT Loans.id as loanId, loanDetails.bookId as bookId, loanDetails.returned as returned, Users.username as username, Users.contactNumber as contactNumber, Users.email as email, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate, Books.title as title, Books.isbn as isbn, Books.imageUrl as cover, Authors.fullName as author, Categories.descr as category FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanId INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id INNER JOIN Users ON Loans.username = Users.username WHERE returned = 1 ORDER BY returnDate DESC';
         return db.query(sqlQuery)
         .then(res => {
             return res;
         });
     }
-    // Regresa el ID de los prestamos que tengan al menos un libro pendiente
-    static async fetchPending(){
-        const sqlQuery ='select loans.id as id, loans.username as username, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate from loans join loandetails on loans.id = loandetails.loanid group by loans.id having sum(loandetails.returned = FALSE) > 0 order by date';
+    // Regresa los prestamos que esten pendientes
+    static async fetchPending() {
+        const sqlQuery = 'SELECT Loans.id as loanId, loanDetails.bookId as bookId, loanDetails.returned as returned, Users.username as username, Users.contactNumber as contactNumber, Users.email as email, DATE_FORMAT(loans.loanDate, "%d-%m-%Y") as date, DATE_FORMAT(loans.returnDate, "%d-%m-%Y") as returnDate, Books.title as title, Books.isbn as isbn, Books.imageUrl as cover, Authors.fullName as author, Categories.descr as category FROM Loans INNER JOIN loanDetails ON Loans.id = loanDetails.loanId INNER JOIN Books ON loanDetails.bookId = Books.id INNER JOIN Authors ON Books.author = Authors.id INNER JOIN Categories ON Books.category = Categories.id INNER JOIN Users ON loans.username = Users.username WHERE Loans.id IN (SELECT loanDetails.loanId as id FROM loanDetails GROUP BY id HAVING SUM(loandetails.returned = FALSE) > 0) ORDER BY returnDate DESC';
         return db.query(sqlQuery)
         .then(res => {
             return res;
+        })
+        .catch(error => {
+            throw newError(500, `Error interno en la consulta - ${error.message}`);
         });
     }
     static async findFromUser(username){
