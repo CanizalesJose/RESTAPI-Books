@@ -12,14 +12,14 @@ router.post('/login/:username', async (req, res) => {
         const {password} = req.body;
         if (!username || !password)
             throw new Error("Faltan credenciales");
-        const user = await userDAO.findUser(username);
-        if (!user || user.length == 0 || !bcrypt.compareSync(password, user[0]['userpassword'])){
+        var user = await userDAO.findUser(username);
+        user = user[0];
+        if (!user || user.length == 0 || !bcrypt.compareSync(password, user.userpassword)){
             return res.status(401).json({message: 'Credenciales inválidas'});
         }
-        const token = jwt.sign({username: user[0]['username'], usertype: user[0]['usertype']}, process.env.SECRET_KEY || 'test', {expiresIn: '4h'});
-        return res.status(201).json({token: token, username: user[0]['username'], usertype: user[0]['usertype']});
+        const token = jwt.sign({username: user.username, usertype: user.usertype}, process.env.SECRET_KEY || 'test', {expiresIn: '4h'});
+        return res.status(201).json({token: token, username: user.username, usertype: user.usertype});
     } catch (error) {
-        console.log(error);
         if (error.sqlState){
             if (error.errno == 1451)
                 return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
