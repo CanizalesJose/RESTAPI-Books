@@ -38,6 +38,10 @@ router.get('/validAdmin', authenticateToken, authorizeRoles(['admin']), async (r
     printPath(req.originalUrl, req.method);
     return res.sendStatus(200);
 });
+router.get('/validWorker', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
+    printPath(req.originalUrl, req.method);
+    return res.sendStatus(200);
+});
 // Recibe en el body un usuario y contraseña en texto plano
 router.post('/register/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.originalUrl, req.method);

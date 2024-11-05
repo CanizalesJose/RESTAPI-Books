@@ -42,7 +42,7 @@ router.get('/fetchByUser', authenticateToken, async (req, res) => {
     }
 });
 
-router.get('/fetchReturned', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchReturned', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         return res.status(200).json(await loanDAO.fetchReturned());
@@ -52,7 +52,7 @@ router.get('/fetchReturned', authenticateToken, authorizeRoles(['admin']), async
     }
 });
 
-router.get('/fetchPending', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchPending', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         return res.status(200).json(await loanDAO.fetchPending());
@@ -73,7 +73,7 @@ router.get('/fetchByUser/:username', authenticateToken, authorizeRoles(['admin']
     }
 });
 
-router.patch('/update/:loanId/:bookId/:newStatus', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.patch('/update/:loanId/:bookId/:newStatus', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         const loanId = req.params.loanId;

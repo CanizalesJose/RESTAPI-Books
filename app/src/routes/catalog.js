@@ -2,7 +2,7 @@ var router = require('express').Router();
 const {authenticateToken, authorizeRoles, printPath} = require('../utils');
 const catalogDAO = require('../models/catalogDAO');
 
-router.get('/fetchNotInCatalog', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchNotInCatalog', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         return res.status(200).json(await catalogDAO.fetchNotInCatalog());
@@ -12,7 +12,7 @@ router.get('/fetchNotInCatalog', authenticateToken, authorizeRoles(['admin']), a
     }
 });
 
-router.get('/fetchCatalog', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchCatalog', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         return res.status(200).json(await catalogDAO.fetchInCatalog());
@@ -75,7 +75,7 @@ router.get('/fetchByTitle/:title', async (req, res) => {
     }
 });
 
-router.post('/add/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.post('/add/:bookId', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         const bookId = req.params.bookId;
@@ -88,7 +88,7 @@ router.post('/add/:bookId', authenticateToken, authorizeRoles(['admin']), async 
     }
 });
 
-router.patch('/editSummary/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.patch('/editSummary/:id/:bookId', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         const id = req.params.id;
@@ -103,7 +103,7 @@ router.patch('/editSummary/:id/:bookId', authenticateToken, authorizeRoles(['adm
     }
 });
 
-router.delete('/remove/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.delete('/remove/:id/:bookId', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         const id = req.params.id;
@@ -115,7 +115,7 @@ router.delete('/remove/:id/:bookId', authenticateToken, authorizeRoles(['admin']
     }
 });
 
-router.patch('/makeVisible/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.patch('/makeVisible/:id/:bookId', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         const id = req.params.id;
@@ -128,7 +128,7 @@ router.patch('/makeVisible/:id/:bookId', authenticateToken, authorizeRoles(['adm
     }
 });
 
-router.patch('/makeNotVisible/:id/:bookId', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.patch('/makeNotVisible/:id/:bookId', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         const id = req.params.id;
