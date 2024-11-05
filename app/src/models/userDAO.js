@@ -50,6 +50,8 @@ class userDAO {
                 throw newError(400, 'El parametro password no cumple los requisitos de longitud');
             if (usertype.length == 0 || usertype.length > 15)
                 throw newError(400, 'El parametro usertype no cumple los requisitos de longitud');
+            if (usertype != 'admin' && usertype != 'worker' && usertype != 'client')
+                throw newError(400, 'El usertype no ninguno de los permitidos');
             if (contactNumber.length == 0 || contactNumber.length > 12)
                 throw newError(400, 'El parametro contactNumber no cumple los requisitos de longitud');
             if (!/^[0-9]{10}|[0-9]{3}-[0-9]{3}-[0-9]{4}$/.test(contactNumber))

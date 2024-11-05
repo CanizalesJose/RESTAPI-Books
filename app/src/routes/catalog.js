@@ -22,7 +22,7 @@ router.get('/fetchCatalog', authenticateToken, authorizeRoles(['admin', 'worker'
     }
 });
 
-router.get('/fetchByTitleInCatalog/:title', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchByTitleInCatalog/:title', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         const title = req.params.title;
@@ -33,7 +33,7 @@ router.get('/fetchByTitleInCatalog/:title', authenticateToken, authorizeRoles(['
     }
 });
 
-router.get('/fetchByTitleOffCatalog/:title', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+router.get('/fetchByTitleOffCatalog/:title', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         const title = req.params.title;
