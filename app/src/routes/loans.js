@@ -52,10 +52,32 @@ router.get('/fetchReturned', authenticateToken, authorizeRoles(['admin', 'worker
     }
 });
 
+router.get('/fetchReturned/:title', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
+    try {
+        printPath(req.originalUrl, req.method);
+        const title = req.params.title;
+        return res.status(200).json(await loanDAO.fetchReturnedByTitle(title));
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
 router.get('/fetchPending', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
     try {
         printPath(req.originalUrl, req.method);
         return res.status(200).json(await loanDAO.fetchPending());
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
+
+router.get('/fetchPending/:title', authenticateToken, authorizeRoles(['admin', 'worker']), async (req, res) => {
+    try {
+        printPath(req.originalUrl, req.method);
+        const title = req.params.title;
+        return res.status(200).json(await loanDAO.fetchPendingByTitle(title));
     } catch (error) {
         const statusCode = error.statusCode || 500;
         return res.status(statusCode).json({message: error.message});
