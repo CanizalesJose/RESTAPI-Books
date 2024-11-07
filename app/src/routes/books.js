@@ -18,7 +18,7 @@ router.get('/find/:id', authenticateToken, authorizeRoles(['admin']), async (req
     }
 })
 
-router.get('/findAll', async (req, res) => {
+router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
     printPath(req.originalUrl, req.method);
     try {
         const allBooks = await bookDAO.findAll();

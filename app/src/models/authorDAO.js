@@ -9,7 +9,7 @@ class authorModel{
             if (!id)
                 throw newError(400, "Faltan parametros");
             if (id.length == 0 || id.length > 15)
-                throw newError(200, "El id no es valido");
+                throw newError(400, "El id no es valido");
             const results = await db.query(mainSqlQuery, [id]);
             if (!results)
                 throw newError(500, "Error en la consulta");
