@@ -30,7 +30,7 @@ const swaggerOptions = {
         },
     ],
     },
-    apis: ['./docs/usersDocs.yaml', './docs/authorsDocs.yaml']
+    apis: ['./docs/*']
 };
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
@@ -43,7 +43,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Se inicia el servidor en el puerto indicado
 app.listen(port);
-console.log(`API escuchando en http://${host}:${port}`);
+console.log(`Listening... http://${host}:${port}/api/`);
+console.log(`Docs... http://${host}:${port}/api-docs/`);
 
 process.on('SIGINT', async () => {
     await db.closePool();

@@ -1,58 +1,33 @@
 tags:
-  - name: Autores
-    description: Rutas relacionadas con la gestión del recurso Authors.
+  - name: Categorías
+    description: Rutas relacionadas con la gestión del recurso Categories.
 
-/api/authors/find:
+/api/categories/find/All:
   get:
     tags:
-      - Autores
-    summary: Ruta protegida solo para administradores. Recupera un autor en base a su Id.
+      - Categorías
+    summary: Ruta protegida solo para administradores. Recupera una lista con todas las categorías.
     parameters:
       - in: header
         name: token
         schema:
           type: string
         required: true
-        description: Token de autenticación firmado por la API a través de la ruta /login
-    requestBody:
-      require: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              id:
-                type: string
-                description: Identificador del autor.
-            required:
-              - id
+        description: Token de autenticación firmadop por la API a través de la ruta /login
     responses:
       200:
-        description: Regresa un recurso de tipo Author
-        content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    description: Identificador del autor.
-                  fullName:
-                    type: string
-                    description: Nombre completo del autor.
-                  nationality:
-                    type: string
-                    description: Nacionalidad del autor.
-      400:
-        description: Error con los parametros.
+        description: Regresa una lista de categorías.
         content:
           application/json:
             schema:
               type: object
               properties:
-                message:
+                id:
                   type: string
-                  description: Mensaje dinámico que detalla el problema de la petición.
+                  description: Identificador de la categoría.
+                descr:
+                  type: string
+                  description: Nombre o descripción de la categoría.
       401:
         description: Token rechazado.
         content: 
@@ -64,7 +39,7 @@ tags:
                   type: string
                   description: Mensaje dinámico que detalla el problema de la petición.
       403:
-        description: Permisos insuficientes
+        description: Permisos insuficientes.
         content: 
           application/json:
             schema:
@@ -84,88 +59,27 @@ tags:
                   type: string
                   description: Mensaje dinámico que detalla el problema de la petición.
 
-/api/authors/findAll:
-  get:
-    parameters:
-      - in: header
-        name: token
-        required: true
-        schema:
-          type: string
-        description: Token de autenticación firmado por la API a través de la ruta /login
-    tags:
-      - Autores
-    summary: Ruta protegida solo para administradores. Regresa una lista de todos los autores.
-    responses:
-      200:
-        description: Regresa una lista de autores.
-        content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    description: Identificador del autor.
-                  fullName:
-                    type: string
-                    description: Nombre completo del autor.
-                  nationality:
-                    type: string
-                    description: Nacionalidad del autor.
-      401:
-        description: Token rechazado.
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  description: Mensaje dinámico que detalla el problema de la petición.
-      403:
-        description: Permisos insuficientes
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  description: Mensaje dinámico que detalla el problema de la petición.
-      500:
-        description: Error interno del servidor.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  description: Mensaje dinámico que detalla el problema de la petición.
-
-/api/authors/findByName/{name}:
+/api/categories/findByDescr/{descr}:
   get:
     tags:
-      - Autores
-    summary: Ruta protegida solo para administradores. Regresa una lista de autores en cuyo nombre se incluya el parametro name.
+      - Categorías
+    summary: Ruta protegida solo para administradores. Regresa una lista de categorías que contengan el parametro de búsqueda.
     parameters:
       - in: path
-        name: name
-        required: true
-        description: Parámetro de busqueda.
+        name: descr
         schema:
           type: string
+        required: true
+        description: Parametro de búsqueda
       - in: header
         name: token
-        required: true
-        description: Token de autenticación firmado por la API a través de la ruta /login
         schema:
           type: string
-    requestBody:
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
     responses:
       200:
-        description: Regresa una lista de autores cuyo nombre contenga el parametro name.
+        description: Regresa una lista de categorías filtradas por el parámetro de búsqueda.
         content:
           application/json:
             schema:
@@ -173,13 +87,10 @@ tags:
               properties:
                 id:
                   type: string
-                  description: Identificador del autor.
-                fullName:
+                  description: Identificador de la categoría.
+                descr:
                   type: string
-                  description: Nombre completo del autor.
-                nationality:
-                  type: string
-                  description: Nacionalidad del autor.
+                  description: Nombre o descripción de la categoría.
       400:
         description: Error en los parametros de la petición.
         content:
@@ -201,7 +112,7 @@ tags:
                   type: string
                   description: Mensaje dinámico que detalla el problema de la petición.
       403:
-        description: Permisos insuficientes
+        description: Permisos insuficientes.
         content: 
           application/json:
             schema:
@@ -221,12 +132,18 @@ tags:
                   type: string
                   description: Mensaje dinámico que detalla el problema de la petición.
 
-
-/api/authors/register:
+/api/categories/register:
   post:
     tags:
-      - Autores
-    summary: Ruta protegida solo para administradores. Registra un nuevo autor.
+      - Categorías
+    summary: Ruta protegida solo para administradores. Registra una nueva categoría.
+    parameters:
+      - in: header
+        name: token
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+        schema:
+          type: string
     requestBody:
       required: true
       content:
@@ -234,15 +151,11 @@ tags:
           schema:
             type: object
             properties:
-              newFullname:
+              descr:
                 type: string
-                description: Nombre completo del autor. No tiene limitaciones de formato. Menor a 100 caracteres.
-              newNationality:
-                type: string
-                description: Nacionalidad del autor. Menor a 50 caracteres.
+                description: Nombre o descripción de la categoría.
             required:
-              - newFullname
-              - newNationality
+              - descr
     responses:
       200:
         description: El recurso se ha creado correctamente.
@@ -255,7 +168,7 @@ tags:
                   type: string
                   description: Mensaje dinámico que detalla el contexto de la petición.
       400:
-        description: Error en los parametros de la solicitud.
+        description: Error en los parametros de la petición.
         content:
           application/json:
             schema:
@@ -275,93 +188,7 @@ tags:
                   type: string
                   description: Mensaje dinámico que detalla el problema de la petición.
       403:
-        description: Permisos insuficientes
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  description: Mensaje dinámico que detalla el problema de la petición.
-      500:
-        description: Error interno del servidor.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  description: Mensaje dinámico que detalla el problema de la petición.
-
-/api/authors/update/{id}:
-  patch:
-    tags:
-      - Autores
-    summary: Ruta protegida solo para administradores. Actualiza los datos de un autor.
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        required: true
-        description: Identificador del recurso Author a modificar.
-      - in: header
-        name: token
-        schema:
-          type: string
-        required: true
-        description: Token de autenticación firmado por la API a través de la ruta /login
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              newFullname:
-                type: string
-                description: Nuevo nombre para el autor.
-              newNationality:
-                type: string
-                description: Nueva nacionalidad para el autor.
-            required:
-              - newFullname
-              - newNationality
-    responses:
-      200:
-        description: El autor se ha actualizado correctamente.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  description: Mensaje dinámico que detalla el contexto de la petición.
-      400:
-        description: Error con los parametros de la petición.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  description: Mensaje dinámico que detalla el problema de la petición.
-      401:
-        description: Token rechazado.
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  description: Mensaje dinámico que detalla el problema de la petición.
-      403:
-        description: Permisos insuficientes
+        description: Permisos insuficientes.
         content: 
           application/json:
             schema:
@@ -381,18 +208,18 @@ tags:
                   type: string
                   description: Mensaje dinámico que detalla el problema de la petición.
 
-/api/authors/delete/{id}:
-  delete:
+/api/categories/update/{id}:
+  patch:
     tags:
-      - Autores
-    summary: Ruta protegida solo para administradores. Elimina un registro de autor en base a su Id.
+      - Categorías
+    summary: Ruta protegida solo para administradores. Actualiza un registro del recurso Categories
     parameters:
       - in: path
         name: id
-        required: true
-        description: Identificador del recurso autor.
         schema:
           type: string
+        required: true
+        description: Identificador del recurso a actualizar.
       - in: header
         name: token
         schema:
@@ -401,7 +228,7 @@ tags:
         description: Token de autenticación firmado por la API a través de la ruta /login
     responses:
       200:
-        description: Registro eliminado.
+        description: Registro actualizado.
         content:
           application/json:
             schema:
@@ -411,7 +238,7 @@ tags:
                   type: string
                   description: Mensaje dinámico que detalla el contexto de la petición.
       400:
-        description: Error con los parametros de la petición.
+        description: Error en los parametros de la petición.
         content:
           application/json:
             schema:
@@ -431,7 +258,77 @@ tags:
                   type: string
                   description: Mensaje dinámico que detalla el problema de la petición.
       403:
-        description: Permisos insuficientes
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/categories/delete/{id}:
+  delete:
+    tags:
+      - Categorías
+    summary: Ruta protegida solo para administradores. Elimina un registro del recurso Categories
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Identificador del recurso a eliminar.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Registro eliminado
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el contexto de la petición.
+      400:
+        description: Error en los parametros de la petición.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
         content: 
           application/json:
             schema:

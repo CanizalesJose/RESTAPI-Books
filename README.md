@@ -90,4 +90,9 @@ Options:
 - `-x <METHOD>:` permite envíar una solicitud usando el método especificado, POST, GET, PATCH o DELETE.
 
 #### Pendientes
-- Documentación de endpoints
+- ~~Documentación Autores~~
+- ~~Documentación de Libros~~
+- Documentación de Catalogo
+- ~~Documentación de Categorias~~
+- Docuemntación de Prestamos
+- ~~Documentación de Usuarios~~
