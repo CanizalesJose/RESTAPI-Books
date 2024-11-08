@@ -504,6 +504,7 @@ tags:
                 description: Lista de identificadores de libros en catalogo.
                 items:
                   type: string
+                  description: Id del libro.
     responses:
       200:
         description: Se ha generado un nuevo pedido.
@@ -519,6 +520,80 @@ tags:
                   description: Mensaje dinámico que detalla el problema de la petición.
       401:
         description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/loans/update/{loanId}/{bookId}/{newStatus}:
+  patch:
+    tags:
+      - Prestamos
+    summary: Ruta protegida solo para administradores y empleados. Actualiza el estado de entrega de un libro prestado.
+    parameters:
+      - in: path
+        name: loanId
+        schema:
+          type: string
+        required: true
+        description: Identificador del registro en prestamos.
+      - in: path
+        name: bookId
+        schema:
+          type: string
+        required: true
+        description: Identificador del libro.
+      - in: path
+        name: newStatus
+        schema:
+          type: boolean
+        required: true
+        description: Determina el estado de la entrega. 0 no entregado, 1 entregado.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Registro actualizado.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
         content: 
           application/json:
             schema:

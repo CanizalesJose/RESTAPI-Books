@@ -3,11 +3,12 @@
 Se trata de un sistema para la gestión de una biblioteca en Node JS usando el framework Express.
 
 Entre las capacidades del servidor están:
-- Gestionar usuarios, dar altas, bajas y modificaciones de usuarios particulares, así como inicios de sesión y autenticación mediante JWT
-- Gestionar categorías a las que pueden pertenecer un libro.
-- Gestionar autores de los libros
-- Gestionar los libros en sí, asignandoles autor y categoría
-- Gestión de prestamos (en desarrollo)
+- Gestión de usuarios, dar altas, bajas y modificaciones de usuarios particulares, así como inicios de sesión y autenticación mediante JWT
+- Gestión de categorías a las que puede pertenecer un libro.
+- Gestión de autores de los libros
+- Gestión de libros
+- Gestión de catálogo
+- Gestión de prestamos
 
 ### Configuraciones
 
@@ -17,12 +18,15 @@ Para ejecutar el programa sin problemas, se presentan a continuación distintas 
 
 El programa fue desarrollado usando las siguientes versiones:
 
+Para un entorno local:
 - Node JS v20.15.0
 - npm v10.7.0
+- MySQL v8.2.0
+
+En caso de usar Docker:
 - Docker v27.2.0, build  3ab4256
 - Docker-Compose v2.29.2-desktop.2
 - WSL v2.3.24.0
-- MySQL v8.2.0
 
 En una máquina Windows 10.0.19045.4894
 
@@ -39,15 +43,22 @@ Una vez en la dirección del repositorio se debe inicializar la base de datos en
 source CREATEDB.sql;
 ```
 
-Si bien, el programa ya está listo para correr, es vital saber que existen una serie de variables de entorno que se pueden configurar. A continuación se muestran estas variables y su valor predeterminado:
+Si bien, el programa ya está listo para correr, es vital saber que existe una serie de variables de entorno que se pueden configurar. A continuación se muestran estas variables y su valor predeterminado:
 
-```
+```yml
+# Puerto que responde a la API
 PORT=5000
+# La dirección que atiende la API
 HOST=localhost
+# La dirección donde se encuentra la base de datos
 DB_HOST=localhost
+# El usuario que maneja la base de datos
 DB_USER=root
+# Contraseña del usuario de la base de datos
 DB_PASSWORD=1234
+# Nombre de la base de datos
 DB_NAME=booksCenter
+# Firma secreta de la API para la generación de Tokens
 SECRET_KEY=test
 ```
 
@@ -89,10 +100,7 @@ Options:
 - `--header <data>`: permite enviar datos en el header de la petición. La información debe tener el formato `parametro: valor`
 - `-x <METHOD>:` permite envíar una solicitud usando el método especificado, POST, GET, PATCH o DELETE.
 
-#### Pendientes
-- ~~Documentación Autores~~
-- ~~Documentación de Libros~~
-- ~~Documentación de Catalogo~~
-- ~~Documentación de Categorias~~
-- Docuemntación de Prestamos
-- ~~Documentación de Usuarios~~
+### Pruebas desde documentación
+A través de la ruta estática http://dirección-api/api-docs/ es posible entrar a la documentación integrada donde se encuentra una explicación del proceso que reliza cada endpoint.
+
+Además encontrarás los parametros que recibe cada petición y permite realizar estas peticiones directamente desde esta página. Permitiendo realizar pruebas.
