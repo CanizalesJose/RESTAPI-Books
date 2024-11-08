@@ -92,7 +92,7 @@ Options:
 #### Pendientes
 - ~~Documentación Autores~~
 - ~~Documentación de Libros~~
-- Documentación de Catalogo
+- ~~Documentación de Catalogo~~
 - ~~Documentación de Categorias~~
 - Docuemntación de Prestamos
 - ~~Documentación de Usuarios~~

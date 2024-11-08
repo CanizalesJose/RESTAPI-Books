@@ -1,0 +1,846 @@
+tags:
+  - name: Catalogo
+    description: Rutas relacionadas con la gestión del Catalogo
+
+/api/catalog/fetchNotInCatalog:
+  get:
+    tags:
+      - Catalogo
+    summary: Ruta protegida solo para administradores y empleados. Regresa una lista de todos los libros que no se encuentren registrados en el catalogo.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageUrl:
+                  type: string
+                  description: Url de la portada del libro.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                title:
+                  type: string
+                  description: Titulo del libro.
+                fullName:
+                  type: string
+                  description: Nombre completo del autor del libro.
+                descr:
+                  type: string
+                  description: Nombre de la categoría del libro.
+                copies:
+                  type: integer
+                  description: Número de copias del libro registradas.
+                loanCopies:
+                  type: integer
+                  description: Número de copias del libro que actualmente estan prestadas.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/fetchCatalog:
+  get:
+    tags:
+      - Catalogo
+    summary: Ruta protegida solo para administradores y empleados. Regresa una lista de todos los libros que si se encuentren registrados en el catalogo.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageUrl:
+                  type: string
+                  description: Url de la portada del libro.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                title:
+                  type: string
+                  description: Titulo del libro.
+                fullName:
+                  type: string
+                  description: Nombre completo del autor del libro.
+                descr:
+                  type: string
+                  description: Nombre de la categoría del libro.
+                copies:
+                  type: integer
+                  description: Número de copias del libro registradas.
+                loanCopies:
+                  type: integer
+                  description: Número de copias del libro que actualmente estan prestadas.
+                isVisible:
+                  type: boolean
+                  description: Indica si el libro debería ser mostrado al público.
+                catalogId:
+                  type: string
+                  description: Identificador del libro en el catalogo.
+                summary:
+                  type: string
+                  description: Resumen o descripción del libro.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/fetchByTitleInCatalog/{title}:
+  get:
+    tags:
+      - Catalogo
+    summary: Ruta protegida solo para administradores y empleados. Regresa una lista de los libros que si se encuentren registrados en el catalogo filtrados por titulo.
+    parameters:
+      - in: path
+        name: title
+        schema:
+          type: string
+        required: true
+        description: Parametro de búsqueda.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageUrl:
+                  type: string
+                  description: Url de la portada del libro.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                title:
+                  type: string
+                  description: Titulo del libro.
+                fullName:
+                  type: string
+                  description: Nombre completo del autor del libro.
+                descr:
+                  type: string
+                  description: Nombre de la categoría del libro.
+                copies:
+                  type: integer
+                  description: Número de copias del libro registradas.
+                loanCopies:
+                  type: integer
+                  description: Número de copias del libro que actualmente estan prestadas.
+                isVisible:
+                  type: boolean
+                  description: Indica si el libro debería ser mostrado al público.
+                catalogId:
+                  type: string
+                  description: Identificador del libro en el catalogo.
+                summary:
+                  type: string
+                  description: Resumen o descripción del libro.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/fetchByTitleOffCatalog/{title}:
+  get:
+    tags:
+      - Catalogo
+    summary: Ruta protegida solo para administradores y empleados. Regresa una lista de los libros que no se encuentren registrados en el catalogo filtrados por titulo.
+    parameters:
+      - in: path
+        name: title
+        schema:
+          type: string
+        required: true
+        description: Parámetro de búsqueda.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageUrl:
+                  type: string
+                  description: Url de la portada del libro.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                title:
+                  type: string
+                  description: Titulo del libro.
+                fullName:
+                  type: string
+                  description: Nombre completo del autor del libro.
+                descr:
+                  type: string
+                  description: Nombre de la categoría del libro.
+                copies:
+                  type: integer
+                  description: Número de copias del libro registradas.
+                loanCopies:
+                  type: integer
+                  description: Número de copias del libro que actualmente estan prestadas.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/fetchVisibleCatalog:
+  get:
+    tags:
+      - Catalogo
+    summary: Ruta pública. Regresa una lista de los libros que si se encuentren registrados en el catalogo y sean visibles para el público.
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageUrl:
+                  type: string
+                  description: Url de la portada del libro.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                title:
+                  type: string
+                  description: Titulo del libro.
+                fullName:
+                  type: string
+                  description: Nombre completo del autor del libro.
+                descr:
+                  type: string
+                  description: Nombre de la categoría del libro.
+                copies:
+                  type: integer
+                  description: Número de copias del libro registradas.
+                loanCopies:
+                  type: integer
+                  description: Número de copias del libro que actualmente estan prestadas.
+                isVisible:
+                  type: boolean
+                  description: Indica si el libro debería ser mostrado al público.
+                catalogId:
+                  type: string
+                  description: Identificador del libro en el catalogo.
+                summary:
+                  type: string
+                  description: Resumen o descripción del libro.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/fetchTopLoans:
+  get:
+    tags:
+      - Catalogo
+    summary: Ruta pública. Regresa una lista de los 5 libros mas prestados.
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                count:
+                  type: integer
+                  description: Cantidad de veces que ha sido pedido.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                cover:
+                  type: string
+                  description: Url de la portada del libro.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/fetchByTitle/{title}:
+  get:
+    tags:
+      - Catalogo
+    summary: Ruta pública. Regresa una lista de los libros que si se encuentren registrados en el catalogo, son visibles para el público y filtrados por titulo.
+    parameters:
+      - in: path
+        name: title
+        schema:
+          type: string
+        required: true
+        description: Parámetro de búsqueda.
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageUrl:
+                  type: string
+                  description: Url de la portada del libro.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                title:
+                  type: string
+                  description: Titulo del libro.
+                fullName:
+                  type: string
+                  description: Nombre completo del autor del libro.
+                descr:
+                  type: string
+                  description: Nombre de la categoría del libro.
+                copies:
+                  type: integer
+                  description: Número de copias del libro registradas.
+                loanCopies:
+                  type: integer
+                  description: Número de copias del libro que actualmente estan prestadas.
+                isVisible:
+                  type: boolean
+                  description: Indica si el libro debería ser mostrado al público.
+                catalogId:
+                  type: string
+                  description: Identificador del libro en el catalogo.
+                summary:
+                  type: string
+                  description: Resumen o descripción del libro.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/add/{bookId}:
+  post:
+    tags:
+      - Catalogo
+    summary: Ruta protegida solo para administradores y empleados. Agrega un registro de un libro al catalogo.
+    parameters:
+      - in: path
+        name: bookId
+        schema:
+          type: string
+        required: true
+        description: Identificador del libro agregado.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              summary:
+                type: string
+                description: Resumen o descripción del libro.
+              isVisible:
+                type: boolean
+                description: Indica si el libro debería ser mostrado al público.
+    responses:
+      200:
+        description: Registro creado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el contexto de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/editSummary/{id}/{bookId}:
+  patch:
+    tags:
+      - Catalogo
+    summary: Ruta protegida solo para administradores y empleados. Actualiza el resumen o descripción de un libro del catalogo.
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Identificador del registro en catalogo.
+      - in: path
+        name: bookId
+        schema:
+          type: string
+        required: true
+        description: Identificador del libro agregado.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              summary:
+                type: string
+                description: Resumen o descripción del libro.
+    responses:
+      200:
+        description: Registro actualizado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el contexto de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/makeVisible/{id}/{bookId}:
+  patch:
+    tags:
+      - Catalogo
+    summary: Ruta protegida solo para administradores y empleados. Actualiza la visibilidad de un libro del catalogo, haciendolo visible.
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Identificador del registro en catalogo.
+      - in: path
+        name: bookId
+        schema:
+          type: string
+        required: true
+        description: Identificador del libro agregado.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Registro actualizado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el contexto de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/makeNotVisible/{id}/{bookId}:
+  patch:
+    tags:
+      - Catalogo
+    summary: Ruta protegida solo para administradores y empleados. Actualiza la visibilidad de un libro del catalogo, haciendolo no visible.
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Identificador del registro en catalogo.
+      - in: path
+        name: bookId
+        schema:
+          type: string
+        required: true
+        description: Identificador del libro agregado.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Registro actualizado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el contexto de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/catalog/remove/{id}/{bookId}:
+  delete:
+    tags:
+      - Catalogo
+    summary: Ruta protegida solo para administradores y empleados. Elimina un registro del catalogo.
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Identificador del registro en catalogo.
+      - in: path
+        name: bookId
+        schema:
+          type: string
+        required: true
+        description: Identificador del libro agregado.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Registro eliminado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el contexto de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.

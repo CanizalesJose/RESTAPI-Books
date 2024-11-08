@@ -1,0 +1,539 @@
+tags:
+  - name: Prestamos
+    description: Rutas relacionadas con la gestión de los Prestamos
+
+/api/loans/fetchByUser:
+  get:
+    tags:
+      - Prestamos
+    summary: Ruta para usuarios. Regresa la lista de libros de los prestamos de un usuario.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de los libros de un pedido en base al usuario que realiza la petición.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nombre del usuario que hizo el pedido.
+                id:
+                  type: string
+                  description: Identificador del prestamo.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                cover:
+                  type: string
+                  description: URL de la portada del libro.
+                title:
+                  type: string
+                  description: Titulo del libro
+                author:
+                  type: string
+                  description: Nombre completo del autor.
+                category:
+                  type: string
+                  description: Nombre o descripción de la categoría.
+                isbn:
+                  type: string
+                  description: Numero de registro de la edición del libro.
+                returned:
+                  type: boolean
+                  description: Indica si el libro ha sido regresado.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/loans/fetchReturned:
+  get:
+    tags:
+      - Prestamos
+    summary: Ruta protegida solo para administradores y empleados. Regresa la lista de libros prestados que ya han sido regresados.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                loanId:
+                  type: string
+                  description: Identificador del prestamo.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                returned:
+                  type: boolean
+                  description: Indica si el libro ha sido regresado.
+                username:
+                  type: string
+                  description: Nombre del usuario al que esta registrado el pedido.
+                contactNumber:
+                  type: string
+                  description: Número de contacto del usuario.
+                email:
+                  type: string
+                  description: Correo electronico del usuario.
+                date:
+                  type: date
+                  description: Fecha en la que se realizó el pedido.
+                returnDate:
+                  type: date
+                  description: Fecha en la que se devolvió el pedido.
+                title:
+                  type: string
+                  description: Titulo del libro
+                cover:
+                  type: string
+                  description: URL de la portada del libro.
+                author:
+                  type: string
+                  description: Nombre completo del autor.
+                category:
+                  type: string
+                  description: Nombre o descripción de la categoría.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/loans/fetchReturned/{title}:
+  get:
+    tags:
+      - Prestamos
+    summary: Ruta protegida solo para administradores y empleados. Regresa la lista de libros prestados que ya han sido regresados, filtrado por titulo.
+    parameters:
+      - in: path
+        name: title
+        schema:
+          type: string
+        required: true
+        description: Parámetro de búsqueda.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                loanId:
+                  type: string
+                  description: Identificador del prestamo.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                returned:
+                  type: boolean
+                  description: Indica si el libro ha sido regresado.
+                username:
+                  type: string
+                  description: Nombre del usuario al que esta registrado el pedido.
+                contactNumber:
+                  type: string
+                  description: Número de contacto del usuario.
+                email:
+                  type: string
+                  description: Correo electronico del usuario.
+                date:
+                  type: date
+                  description: Fecha en la que se realizó el pedido.
+                returnDate:
+                  type: date
+                  description: Fecha en la que se devolvió el pedido.
+                title:
+                  type: string
+                  description: Titulo del libro
+                cover:
+                  type: string
+                  description: URL de la portada del libro.
+                author:
+                  type: string
+                  description: Nombre completo del autor.
+                category:
+                  type: string
+                  description: Nombre o descripción de la categoría.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/loans/fetchPending:
+  get:
+    tags:
+      - Prestamos
+    summary: Ruta protegida solo para administradores y empleados. Regresa la lista de libros prestados que no han sido regresados.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                loanId:
+                  type: string
+                  description: Identificador del prestamo.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                returned:
+                  type: boolean
+                  description: Indica si el libro ha sido regresado.
+                username:
+                  type: string
+                  description: Nombre del usuario al que esta registrado el pedido.
+                contactNumber:
+                  type: string
+                  description: Número de contacto del usuario.
+                email:
+                  type: string
+                  description: Correo electronico del usuario.
+                date:
+                  type: date
+                  description: Fecha en la que se realizó el pedido.
+                returnDate:
+                  type: date
+                  description: Fecha en la que se devolvió el pedido.
+                title:
+                  type: string
+                  description: Titulo del libro
+                cover:
+                  type: string
+                  description: URL de la portada del libro.
+                author:
+                  type: string
+                  description: Nombre completo del autor.
+                category:
+                  type: string
+                  description: Nombre o descripción de la categoría.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/loans/fetchPending/{title}:
+  get:
+    tags:
+      - Prestamos
+    summary: Ruta protegida solo para administradores y empleados. Regresa la lista de libros prestados que no han sido regresados, filtrado por titulo.
+    parameters:
+      - in: path
+        name: title
+        schema:
+          type: string
+        required: true
+        description: Parámetro de búsqueda.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de libros.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                loanId:
+                  type: string
+                  description: Identificador del prestamo.
+                bookId:
+                  type: string
+                  description: Identificador del libro.
+                returned:
+                  type: boolean
+                  description: Indica si el libro ha sido regresado.
+                username:
+                  type: string
+                  description: Nombre del usuario al que esta registrado el pedido.
+                contactNumber:
+                  type: string
+                  description: Número de contacto del usuario.
+                email:
+                  type: string
+                  description: Correo electronico del usuario.
+                date:
+                  type: date
+                  description: Fecha en la que se realizó el pedido.
+                returnDate:
+                  type: date
+                  description: Fecha en la que se devolvió el pedido.
+                title:
+                  type: string
+                  description: Titulo del libro
+                cover:
+                  type: string
+                  description: URL de la portada del libro.
+                author:
+                  type: string
+                  description: Nombre completo del autor.
+                category:
+                  type: string
+                  description: Nombre o descripción de la categoría.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
+/api/loans/new:
+  post:
+    tags:
+      - Prestamos
+    summary: Ruta para usuarios. Realiza un nuevo pedido de una lista de libros.
+    parameters:
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              booksList:
+                type: array
+                description: Lista de identificadores de libros en catalogo.
+                items:
+                  type: string
+    responses:
+      200:
+        description: Se ha generado un nuevo pedido.
+      400:
+        description: Error con los parámetros de la petición.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
