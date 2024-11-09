@@ -112,6 +112,22 @@ router.get('/findAll', authenticateToken, authorizeRoles(['admin']), async (req,
         return res.status(statusCode).json({message: error.message});
     }
 });
+// Ruta protegida para buscar usuarios en base a su nombre
+router.get('/findByUsername/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) => {
+    printPath(req.originalUrl, req.method);
+    try {
+        const username = req.params.username;
+        return res.status(200).json(await userDAO.findByUsername(username));
+    } catch (error) {
+        if (error.sqlState){
+            if (error.errno == 1451)
+                return res.status(400).json({message: "No se puede eliminar dado que forma parte de otro registro"});
+            return res.status(500).json({message: 'Error interno en consulta'});
+        }
+        const statusCode = error.statusCode || 500;
+        return res.status(statusCode).json({message: error.message});
+    }
+});
 // Ruta protegida para modificar usuarios
 router.patch('/update/:username', authenticateToken, authorizeRoles(['admin']), async (req, res) =>{
     printPath(req.originalUrl, req.method);

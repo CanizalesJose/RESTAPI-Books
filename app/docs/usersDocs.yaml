@@ -2,6 +2,89 @@ tags:
   - name: Usuarios
     description: Rutas relacionadas con el proceso de autenticación, validación de acceso y gestión de usuarios.
 
+/api/users/findByUsername/{username}:
+  get:
+    tags:
+      - Usuarios
+    summary: Ruta protegida solo para administradores. Regresa una lista de usuarios que contengan el parametro de búsqueda.
+    parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+        description: Parametro de búsqueda.
+      - in: header
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de autenticación firmado por la API a través de la ruta /login
+    responses:
+      200:
+        description: Regresa una lista de usuarios filtrados por el parámetro de búsqueda.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nombre del usuario
+                usertype:
+                  type: string
+                  description: Tipo de usuario (admin, client o worker).
+                contactNumber:
+                  type: string
+                  description: Número de contacto del usuario
+                email:
+                  type: string
+                  description: Correo electronico del usuario
+                penalized:
+                  type: boolean
+                  description: Si el usuario tiene mas de una semana de atraso con un pedido es penalizado y no puede realizar mas pedidos.
+                
+      400:
+        description: Error en los parametros de la petición.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      401:
+        description: Token rechazado.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      403:
+        description: Permisos insuficientes.
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+      500:
+        description: Error interno en el servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Mensaje dinámico que detalla el problema de la petición.
+
 /api/users/validAdmin:
   get:
     tags:
@@ -186,6 +269,15 @@ tags:
                 usertype:
                   type: string
                   description: Tipo de usuario y el alcance de sus privilegios
+                contactNumber:
+                  type: string
+                  description: Número de contacto del usuario.
+                email:
+                  type: string
+                  description: Correo electronico del usuario.
+                penalized:
+                  type: boolean
+                  description: Indicador del estado del usuario.
       401:
         description: Token rechazado.
         content: 

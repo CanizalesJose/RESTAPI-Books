@@ -14,6 +14,25 @@ class userDAO {
             throw error;
         }
     }
+    // Regresa una lista de usuarios en base al nombre
+    static async findByUsername(username){
+        const sqlQuery = 'SELECT username, usertype, contactNumber, email, penalized FROM Users WHERE username LIKE ?';
+        try {
+            if (!username)
+                throw newError(400, 'Falta el parámetro username');
+            username = `%${username}%`;
+
+            return db.query(sqlQuery, [username])
+            .then(res => {
+                return res;
+            })
+            .catch(error => {
+                throw newError(500, `Error en la consulta: ${error.message}`);
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
     // Regresa un arreglo de diccionarios si encuentra un usuario en base a un nombre
     static async findUser(username){
         const sqlQuery = 'SELECT username, userpassword, usertype, contactNumber, email, penalized FROM Users WHERE username = ?;'
