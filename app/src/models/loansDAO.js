@@ -91,6 +91,10 @@ class loansDAO{
                 throw newError(500, "Error interno en la consulta");
             if (result.length == 0)
                 throw newError(400, "El usuario no existe");
+            result = result[0];
+            if (result.penalized == 1){
+                throw newError(400, 'El usuario esta penalizado, no puede realizar pedidos.');
+            }
             // Revisar las copias de cada libro
             let missingBooks = [];
             for (const book of booksList) {
